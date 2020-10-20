@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <instances>
+        <instance id="501" module_id="10001">
+            <inputs>
+                <input index="1">1</input>
+                <input index="2">60</input>
+                <input index="3">192.168.80.20</input>
+                <input index="4">1502</input>
+                <input index="5">71</input>
+            </inputs>
+        </instance>
+    </instances>
+</project>
