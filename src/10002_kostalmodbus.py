@@ -45,7 +45,7 @@ class Kostalmodbus10002(hsl20_3.BaseModule):
             "pvCONSUMPTION": ['f32', 116, self.PIN_O_HOME_CONSUMPTION_PV, 0.0],
             "gridPOWER": ['f32', 252, self.PIN_O_TOTAL_POWER_FROM_GRID, 0.0],
             "inverterPOWER": ['f32', 575, self.PIN_O_INVERTER_POWER, 0.0],
-            "batteryPOWER": ['s16', 582, self.PIN_O_INVERTER_POWER, 0]
+            "batteryPOWER": ['s16', 582, self.PIN_O_POWER_FROM_BATTERY, 0]
         }
 
 #############
