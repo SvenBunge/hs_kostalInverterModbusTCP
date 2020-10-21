@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Weitere Bausteine" context="kostalmodbus10002" id="10002" name="kostalmodbus" sinternal_name="kostalmodbus" external_name="Kostal-Modbus-Reader (10002)" version="0.1">
+        <module category="Energiemanagement" context="kostalmodbus10002" id="10002" name="kostalmodbus" sinternal_name="kostalmodbus" external_name="Kostal-Modbus-Reader (10002)" version="0.1">
             <inputs>
                 <input type="number" const_name="trigger" init_value="0">Trigger</input>
                 <input type="number" const_name="time_current_power_values" init_value="5">Seconds of time period to read current power values (default: 10 secs)</input>
                 <input type="string" const_name="inverter_ip" init_value="127.0.0.1">IP of inverter</input>
-                <input type="number" const_name="port" init_value="502">Modbus TCP Port (default: 502 - Kostal default: 1502)</input>
-                <input type="number" const_name="unit-id" init_value="1">Modbus unit id (default: 1 - Kostal default: 71)</input>
+                <input type="number" const_name="port" init_value="1502">Modbus TCP Port (Kostal default: 1502)</input>
+                <input type="number" const_name="unit-id" init_value="71">Modbus unit id (Kostal default: 71)</input>
             </inputs>
             <outputs>
                 <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in %</output>
