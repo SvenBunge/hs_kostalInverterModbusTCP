@@ -1,5 +1,4 @@
 # coding: UTF-8
-import logging
 import pymodbus  # To not delete this module reference!!
 from pymodbus.constants import Endian
 from pymodbus.payload import BinaryPayloadDecoder
@@ -16,8 +15,8 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         hsl20_3.BaseModule.__init__(self, homeserver_context, "kostalmodbus14180")
         self.FRAMEWORK = self._get_framework()
         self.LOGGER = self._get_logger(hsl20_3.LOGGING_NONE,())
-        self.PIN_I_TRIGGER=1
-        self.PIN_I_TIME_CURRENT_POWER_VALUES=2
+        self.PIN_I_SWITCH=1
+        self.PIN_I_FETCH_INTERVAL=2
         self.PIN_I_INVERTER_IP=3
         self.PIN_I_PORT=4
         self.PIN_I_UNIT_ID=5
@@ -36,6 +35,8 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
 #### Own written code can be placed after this commentblock . Do not change or delete commentblock! ####
 ###################################################################################################!!!##
 
+        self.interval = None
+
         self.DEBUG = self.FRAMEWORK.create_debug_section()
 
         self.holdingRegister = {
@@ -50,13 +51,17 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
 
 #############
 
-    def read_current_power_values(self, ip_address, port_number, unit_id):
+    def on_interval(self):
+        ip_address = str(self._get_input_value(self.PIN_I_INVERTER_IP))
+        port = int(self._get_input_value(self.PIN_I_PORT))
+        unit_id = int(self._get_input_value(self.PIN_I_UNIT_ID))
+
         client = None
         try:
             self.DEBUG.set_value("creating client with IP:", ip_address)
-            self.DEBUG.set_value("creating client with Port:", port_number)
+            self.DEBUG.set_value("creating client with Port:", port)
             self.DEBUG.set_value("creating client with UnitID:", unit_id)
-            client = ModbusTcpClient(ip_address, port=port_number)
+            client = ModbusTcpClient(ip_address, port)
             client.connect()
 
             self.read_power_values(client, unit_id)
@@ -70,11 +75,11 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         for register in self.holdingRegister:
             value = 0
             if self.holdingRegister[register][0] == 'u16':
-                value = Kostalmodbus10002.read_u16_1(client, unit_id, self.holdingRegister[register][1])
+                value = Kostalmodbus14180.read_u16_1(client, unit_id, self.holdingRegister[register][1])
             elif self.holdingRegister[register][0] == 's16':
-                value = Kostalmodbus10002.read_s16_1(client, unit_id, self.holdingRegister[register][1])
+                value = Kostalmodbus14180.read_s16_1(client, unit_id, self.holdingRegister[register][1])
             elif self.holdingRegister[register][0] == 'f32':
-                value = Kostalmodbus10002.read_32float_2(client, unit_id, self.holdingRegister[register][1])
+                value = Kostalmodbus14180.read_32float_2(client, unit_id, self.holdingRegister[register][1])
 
             self.DEBUG.set_value(register, value)  # set Debug value
             self._set_output_value(self.holdingRegister[register][2], value)  # set value to output PIN
@@ -86,22 +91,24 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         self._set_output_value(self.PIN_O_HOME_CONSUMPTION_TOTAL, total_consumption)
 
         # Calculate total power from PV
-        total_power_from_pv = min(0, self.holdingRegister['batteryPOWER'][3]) + min(0, self.holdingRegister['gridPOWER'][3]) + self.holdingRegister['pvCONSUMPTION'][3]
+        total_power_from_pv = -1 * (min(0, self.holdingRegister['batteryPOWER'][3]) + min(0, self.holdingRegister['gridPOWER'][3])) + self.holdingRegister['pvCONSUMPTION'][3]
         self.DEBUG.set_value('pvPOWER', total_power_from_pv)
         self._set_output_value(self.PIN_O_TOTAL_POWER_FROM_PV, total_power_from_pv)
 
     #############
 
     def on_init(self):
-        pass
+        self.interval = self.FRAMEWORK.create_interval()
+        if self._get_input_value(self.PIN_I_SWITCH) == 1:
+            self.interval.set_interval(self._get_input_value(self.PIN_I_FETCH_INTERVAL) * 1000, self.on_interval)
+            self.interval.start()
 
     def on_input_value(self, index, value):
-        if index == self.PIN_I_TRIGGER:
-            ip_address = str(self._get_input_value(self.PIN_I_INVERTER_IP))
-            port = int(self._get_input_value(self.PIN_I_PORT))
-            unit_id = int(self._get_input_value(self.PIN_I_UNIT_ID))
-            self.read_current_power_values(ip_address, port, unit_id)
-
+        if index == self.PIN_I_SWITCH:
+            self.interval.stop()
+            if value == 1:
+                self.interval.set_interval(self._get_input_value(self.PIN_I_FETCH_INTERVAL)*1000, self.on_interval)
+                self.interval.start()
 
     @staticmethod
     def read_u16_1(client, unit_id, reg_addr):

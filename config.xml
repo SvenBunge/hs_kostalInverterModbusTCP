@@ -3,8 +3,8 @@
     <modules>
         <module category="Energiemanagement" context="kostalmodbus14180" id="14180" name="kostalmodbus" sinternal_name="kostalmodbus" external_name="Kostal-Modbus-Reader (14180)" version="0.2">
             <inputs>
-                <input type="number" const_name="trigger" init_value="0">Trigger</input>
-                <input type="number" const_name="time_current_power_values" init_value="5">Seconds of time period to read current power values (default: 10 secs)</input>
+                <input type="number" const_name="switch" init_value="0">Switch on (1) / off (0)</input>
+                <input type="number" const_name="fetch_interval" init_value="5">Seconds of the interval to read power values (default: 5 secs)</input>
                 <input type="string" const_name="inverter_ip" init_value="127.0.0.1">IP of inverter</input>
                 <input type="number" const_name="port" init_value="1502">Modbus TCP Port (Kostal default: 1502)</input>
                 <input type="number" const_name="unit-id" init_value="71">Modbus unit id (Kostal default: 71)</input>
@@ -23,6 +23,7 @@
             <remanent_variables>
             </remanent_variables>
             <imports>
+                <import>hsl20_3_timer</import>
                 <import>lib/pymodbus</import>
             </imports>
         </module>
