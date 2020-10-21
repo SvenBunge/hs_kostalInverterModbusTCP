@@ -10,10 +10,10 @@ from pymodbus.client.sync import ModbusTcpClient
 ########################################################################################################
 ##** Code created by generator - DO NOT CHANGE! **##
 
-class Kostalmodbus10002(hsl20_3.BaseModule):
+class Kostalmodbus14180(hsl20_3.BaseModule):
 
     def __init__(self, homeserver_context):
-        hsl20_3.BaseModule.__init__(self, homeserver_context, "kostalmodbus10002")
+        hsl20_3.BaseModule.__init__(self, homeserver_context, "kostalmodbus14180")
         self.FRAMEWORK = self._get_framework()
         self.LOGGER = self._get_logger(hsl20_3.LOGGING_NONE,())
         self.PIN_I_TRIGGER=1

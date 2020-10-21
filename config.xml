@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Energiemanagement" context="kostalmodbus10002" id="10002" name="kostalmodbus" sinternal_name="kostalmodbus" external_name="Kostal-Modbus-Reader (10002)" version="0.1">
+        <module category="Energiemanagement" context="kostalmodbus14180" id="14180" name="kostalmodbus" sinternal_name="kostalmodbus" external_name="Kostal-Modbus-Reader (14180)" version="0.2">
             <inputs>
                 <input type="number" const_name="trigger" init_value="0">Trigger</input>
                 <input type="number" const_name="time_current_power_values" init_value="5">Seconds of time period to read current power values (default: 10 secs)</input>
