@@ -45,7 +45,7 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         self.total_consumption_sbc, self.total_power_from_pv_sbc = (-1, ) * 2
 
         self.holdingRegister = {
-            "batterySOC": ['u16', 514, self.PIN_O_BATTERY_SOC, 0],
+            "batterySOC": ['u16', 514, self.PIN_O_BATTERY_SOC, 0, None],
             "batteryCONSUMPTION": ['f32', 106, self.PIN_O_HOME_CONSUMPTION_BATTERY, 0.0, None],
             "gridCONSUMPTION": ['f32', 108, self.PIN_O_HOME_CONSUMPTION_GRID, 0.0, None],
             "pvCONSUMPTION": ['f32', 116, self.PIN_O_HOME_CONSUMPTION_PV, 0.0, None],
@@ -128,7 +128,7 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         if index == self.PIN_I_SWITCH:
             self.interval.stop()
             if value == 1:
-                self.interval.set_interval(self._get_input_value(self.PIN_I_FETCH_INTERVAL)*1000, self.on_interval)
+                self.interval.set_interval(self._get_input_value(self.PIN_I_FETCH_INTERVAL) * 1000, self.on_interval)
                 self.interval.start()
 
     @staticmethod
