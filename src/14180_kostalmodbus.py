@@ -29,6 +29,10 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         self.PIN_O_TOTAL_POWER_FROM_PV=7
         self.PIN_O_INVERTER_POWER=8
         self.PIN_O_POWER_FROM_BATTERY=9
+        self.PIN_O_TOTAL_YIELD=10
+        self.PIN_O_DAILY_YIELD=11
+        self.PIN_O_MONTHLY_YIELD=12
+        self.PIN_O_YEARLY_YIELD=13
         self.FRAMEWORK._run_in_context_thread(self.on_init)
 
 ########################################################################################################
@@ -36,17 +40,22 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
 ###################################################################################################!!!##
 
         self.interval = None
-
         self.DEBUG = self.FRAMEWORK.create_debug_section()
+
+        self.total_consumption_sbc, self.total_power_from_pv_sbc = (-1, ) * 2
 
         self.holdingRegister = {
             "batterySOC": ['u16', 514, self.PIN_O_BATTERY_SOC, 0],
-            "batteryCONSUMPTION": ['f32', 106, self.PIN_O_HOME_CONSUMPTION_BATTERY, 0.0],
-            "gridCONSUMPTION": ['f32', 108, self.PIN_O_HOME_CONSUMPTION_GRID, 0.0],
-            "pvCONSUMPTION": ['f32', 116, self.PIN_O_HOME_CONSUMPTION_PV, 0.0],
-            "gridPOWER": ['f32', 252, self.PIN_O_TOTAL_POWER_FROM_GRID, 0.0],
-            "inverterPOWER": ['f32', 575, self.PIN_O_INVERTER_POWER, 0.0],
-            "batteryPOWER": ['s16', 582, self.PIN_O_POWER_FROM_BATTERY, 0]
+            "batteryCONSUMPTION": ['f32', 106, self.PIN_O_HOME_CONSUMPTION_BATTERY, 0.0, None],
+            "gridCONSUMPTION": ['f32', 108, self.PIN_O_HOME_CONSUMPTION_GRID, 0.0, None],
+            "pvCONSUMPTION": ['f32', 116, self.PIN_O_HOME_CONSUMPTION_PV, 0.0, None],
+            "gridPOWER": ['f32', 252, self.PIN_O_TOTAL_POWER_FROM_GRID, 0.0, None],
+            "inverterPOWER": ['f32', 575, self.PIN_O_INVERTER_POWER, 0.0, None],
+            "batteryPOWER": ['s16', 582, self.PIN_O_POWER_FROM_BATTERY, 0, None],
+            "totalYIELD": ['f32', 320, self.PIN_O_TOTAL_YIELD, 0.0, lambda x: x / 1000],
+            "dailyYIELD": ['f32', 322, self.PIN_O_DAILY_YIELD, 0.0, lambda x: x / 1000],
+            "monthlyYIELD": ['f32', 326, self.PIN_O_MONTHLY_YIELD, 0.0, lambda x: x / 1000],
+            "yearlyYIELD": ['f32', 324, self.PIN_O_YEARLY_YIELD, 0.0, lambda x: x / 1000]
         }
 
 #############
@@ -81,19 +90,31 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
             elif self.holdingRegister[register][0] == 'f32':
                 value = Kostalmodbus14180.read_32float_2(client, unit_id, self.holdingRegister[register][1])
 
-            self.DEBUG.set_value(register, value)  # set Debug value
+            self.DEBUG.set_value(register, value)  # set Debug raw value
+
+            # apply lambda if set
+            if self.holdingRegister[register][4] is not None:
+                value = self.holdingRegister[register][4](value)
+
             self._set_output_value(self.holdingRegister[register][2], value)  # set value to output PIN
-            self.holdingRegister[register][3] = value  # assign value to variable
+
+            # send by change if check (sbc)
+            if self.holdingRegister[register][3] != value:
+                self.holdingRegister[register][3] = value  # assign value to variable
 
         # Calculate current total home consumption
         total_consumption = self.holdingRegister['batteryCONSUMPTION'][3] + self.holdingRegister['gridCONSUMPTION'][3] + self.holdingRegister['pvCONSUMPTION'][3]
-        self.DEBUG.set_value('totalCONSUMPTION', total_consumption)
-        self._set_output_value(self.PIN_O_HOME_CONSUMPTION_TOTAL, total_consumption)
+        if self.total_consumption_sbc != total_consumption:
+            self.DEBUG.set_value('totalCONSUMPTION', total_consumption)
+            self._set_output_value(self.PIN_O_HOME_CONSUMPTION_TOTAL, total_consumption)
+            self.total_consumption_sbc = total_consumption
 
         # Calculate total power from PV
         total_power_from_pv = -1 * (min(0, self.holdingRegister['batteryPOWER'][3]) + min(0, self.holdingRegister['gridPOWER'][3])) + self.holdingRegister['pvCONSUMPTION'][3]
-        self.DEBUG.set_value('pvPOWER', total_power_from_pv)
-        self._set_output_value(self.PIN_O_TOTAL_POWER_FROM_PV, total_power_from_pv)
+        if self.total_power_from_pv_sbc != total_power_from_pv:
+            self.DEBUG.set_value('pvPOWER', total_power_from_pv)
+            self._set_output_value(self.PIN_O_TOTAL_POWER_FROM_PV, total_power_from_pv)
+            self.total_power_from_pv_sbc = total_power_from_pv
 
     #############
 
