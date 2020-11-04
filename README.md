@@ -20,12 +20,34 @@ This module fetches power information and states from home solar power inverters
 
 ### Holding registers
 
-| Register ID | Type | Output | Description |
+| Register ID | DPT | Output | Description |
 | ----------- | -----| ------ | ----------- |
-| 514 | Integer | Battery SOC in % | Contains the level of the battery in % |
-| 106 | Float | Own consumption from battery in W | The power your home / building is 'eating' from your battery in Watt |
-... TBD
+| 106 | 9.xxx | Own consumption from battery in W (sbc) | The power your home / building is 'eating' from your battery in Watt |
+| 108 | 9.xxx | Own consumption from grid in W (sbc) | The power your home / building is fetching from the grid in Watt |
+| 116 | 9.xxx | Own consumption from PV in W (sbc) | The power your home / building is powered by your Solar panels |
+| xxx | 9.xxx | Total current own consumption in W (sbc) | The power your home / building is using (Grid + Battery + PV) |
+| 252 | 9.xxx | Total power from grid (neg: feed-in) (sbc) | The total power the inverter is fetching or feeding from/to the grid. Neg. is feeding. |
+| xxx | 9.xxx | Total power from PV generator (sbc) | The total power your inverter fetches from your PV. This value could be limited by the grid feed-in limit (fe. 70%). This value is calculated of battery-charge, home consumption and feed-in power.|
+| 575 | 9.xxx | Power of inverter (AC/DC conversion) in W (sbc) | The power that is actually converted between AC and DC |
+| 582 | 9.xxx | Power from battery in W (neg: loading) (sbc) | The unload or load (neg.) of the battery in Watt |
+| 320 | 9.xxx | Total yield in kWh (sbc) | Total energy ever fetched over the inverter* - in kWh |
+| 322 | 9.xxx | Daily yield in kWh (sbc) | Energy fetched over the inverter today* - in kWh |
+| 326 | 9.xxx | Monthly yield in kWh (sbc) | Energy fetched over the inverter this month* - in kWh |
+| 324 | 9.xxx | Yearly yield in kWh (sbc) | Energy fetched over the inverter this year* - in kWh |
+| 266 | 9.xxx | DC1 Voltage in V (sbc) | Actual Voltage of the 1. MPP String |
+| 258 | 9.xxx | DC1 Current in A (sbc) | Actual Current of the 1. MPP String |
+| 276 | 9.xxx | DC1 Voltage in V (sbc) | Actual Voltage of the 2. MPP String |
+| 268 | 9.xxx | DC1 Current in A (sbc) | Actual Current of the 2. MPP String |
+| 276 | 9.xxx | DC1 Voltage in V (sbc) | Actual Voltage of the 3. MPP String - zero if a battery is connected! |
+| 268 | 9.xxx | DC1 Current in A (sbc) | Actual Current of the 3. MPP String - zero if a battery is connected! |
+| 514 | 6.010 | Battery SOC in % (sbc) | Contains the level of the battery in % |
+| 529 | 9.xxx | Battery Capacity in kWh (sbc) | Capacity of the Battery (if connected) |
+| 194 | 7.001 | Battery Cycles (sbc) | Full cycles of battery unloading/loading (if connected) |
+| 216 | 9.xxx | Battery Voltage in V (sbc) | Actual Voltage of the Battery (if connected) |
+| 214 | 9.xxx | Battery Temperature in °C (sbc) | Actual Temperature of the Battery (if connected) |
 
+All outputs are only triggered by a change (sbc).
+*) Yield: If the battery is loaded DC/DC, the amount of energy is not included in this value. Work around: Add the SOC / 100 * battery capacity to get it approximated.
 
 ## Build from scratch
 

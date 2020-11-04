@@ -10,19 +10,30 @@
                 <input type="number" const_name="unit-id" init_value="71">Modbus unit id (Kostal default: 71)</input>
             </inputs>
             <outputs>
-                <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in % (sbc)</output>
-                <output type="number" const_name="home_consumption_battery" init_value="0.0">Own consumption from battery in W (sbc)</output>
-                <output type="number" const_name="home_consumption_grid" init_value="0.0">Own consumption from grid in W (sbc)</output>
-                <output type="number" const_name="home_consumption_pv" init_value="0.0">Own consumption from PV in W (sbc)</output>
-                <output type="number" const_name="home_consumption_total" init_value="0.0">Total current own consumption in W (sbc)</output>
-                <output type="number" const_name="total_power_from_grid" init_value="0.0">Total power from grid (neg: feed-in) (sbc)</output>
-                <output type="number" const_name="total_power_from_pv" init_value="0.0">Total power from PV generator (sbc)</output>
-                <output type="number" const_name="inverter_power" init_value="0.0">Power of inverter (AC/DC conversion) in W (sbc)</output>
-                <output type="number" const_name="power_from_battery" init_value="0.0">Power from battery in W (neg: loading) (sbc)</output>
+                <output type="number" const_name="home_consumption_battery" init_value="0">Own consumption from battery in W (sbc)</output>
+                <output type="number" const_name="home_consumption_grid" init_value="0">Own consumption from grid in W (sbc)</output>
+                <output type="number" const_name="home_consumption_pv" init_value="0">Own consumption from PV in W (sbc)</output>
+                <output type="number" const_name="home_consumption_total" init_value="0">Total current own consumption in W (sbc)</output>
+                <output type="number" const_name="total_power_from_grid" init_value="0">Total power from grid (neg: feed-in) (sbc)</output>
+                <output type="number" const_name="total_power_from_pv" init_value="0">Total power from PV generator (sbc)</output>
+                <output type="number" const_name="inverter_power" init_value="0">Power of inverter (AC/DC conversion) in W (sbc)</output>
+                <output type="number" const_name="power_from_battery" init_value="0">Power from battery in W (neg: loading) (sbc)</output>
                 <output type="number" const_name="total_yield" init_value="0.0">Total yield in kWh (sbc)</output>
                 <output type="number" const_name="daily_yield" init_value="0.0">Daily yield in kWh (sbc)</output>
                 <output type="number" const_name="monthly_yield" init_value="0.0">Monthly yield in kWh (sbc)</output>
                 <output type="number" const_name="yearly_yield" init_value="0.0">Yearly yield in kWh (sbc)</output>
+                <output type="number" const_name="dc1_voltage" init_value="0.0">DC1 Voltage in V (sbc)</output>
+                <output type="number" const_name="dc1_current" init_value="0.0">DC1 Current in A (sbc)</output>
+                <output type="number" const_name="dc2_voltage" init_value="0.0">DC2 Voltage in V (sbc)</output>
+                <output type="number" const_name="dc2_current" init_value="0.0">DC2 Current in A (sbc)</output>
+                <output type="number" const_name="dc3_voltage" init_value="0.0">DC3 Voltage in V (sbc)</output>
+                <output type="number" const_name="dc3_current" init_value="0.0">DC3 Current in A (sbc)</output>
+                <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in % (sbc)</output>
+                <output type="number" const_name="battery_capacity" init_value="0.0">Battery Capacity in kWh (sbc)</output>
+                <output type="number" const_name="battery_cycles" init_value="0">Battery Cycles (sbc)</output>
+                <output type="number" const_name="battery_voltage" init_value="0.0">Battery Voltage in V (sbc)</output>
+                <output type="number" const_name="battery_temperature" init_value="0.0">Battery Temperature in °C (sbc)</output>
+                <output type="number" const_name="battery_ready" init_value="0">Battery ready (sbc)</output>
             </outputs>
             <remanent_variables>
             </remanent_variables>
