@@ -1,4 +1,5 @@
 # coding: UTF-8
+
 import pymodbus  # To not delete this module reference!!
 from pymodbus.constants import Endian
 from pymodbus.payload import BinaryPayloadDecoder
@@ -20,6 +21,7 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         self.PIN_I_INVERTER_IP=3
         self.PIN_I_PORT=4
         self.PIN_I_UNIT_ID=5
+        self.PIN_I_MODBUS_ENDIAN=6
         self.PIN_O_HOME_CONSUMPTION_BATTERY=1
         self.PIN_O_HOME_CONSUMPTION_GRID=2
         self.PIN_O_HOME_CONSUMPTION_PV=3
@@ -27,23 +29,24 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         self.PIN_O_TOTAL_POWER_FROM_GRID=5
         self.PIN_O_TOTAL_POWER_FROM_PV=6
         self.PIN_O_INVERTER_POWER=7
-        self.PIN_O_POWER_FROM_BATTERY=8
-        self.PIN_O_TOTAL_YIELD=9
-        self.PIN_O_DAILY_YIELD=10
-        self.PIN_O_MONTHLY_YIELD=11
-        self.PIN_O_YEARLY_YIELD=12
-        self.PIN_O_DC1_VOLTAGE=13
-        self.PIN_O_DC1_CURRENT=14
-        self.PIN_O_DC2_VOLTAGE=15
-        self.PIN_O_DC2_CURRENT=16
-        self.PIN_O_DC3_VOLTAGE=17
-        self.PIN_O_DC3_CURRENT=18
-        self.PIN_O_BATTERY_SOC=19
-        self.PIN_O_BATTERY_CAPACITY=20
-        self.PIN_O_BATTERY_CYCLES=21
-        self.PIN_O_BATTERY_VOLTAGE=22
-        self.PIN_O_BATTERY_TEMPERATURE=23
-        self.PIN_O_BATTERY_READY=24
+        self.PIN_O_INVERTER_STATE_INT=8
+        self.PIN_O_INVERTER_STATE=9
+        self.PIN_O_POWER_FROM_BATTERY=10
+        self.PIN_O_TOTAL_YIELD=11
+        self.PIN_O_DAILY_YIELD=12
+        self.PIN_O_MONTHLY_YIELD=13
+        self.PIN_O_YEARLY_YIELD=14
+        self.PIN_O_DC1_VOLTAGE=15
+        self.PIN_O_DC1_CURRENT=16
+        self.PIN_O_DC2_VOLTAGE=17
+        self.PIN_O_DC2_CURRENT=18
+        self.PIN_O_DC3_VOLTAGE=19
+        self.PIN_O_DC3_CURRENT=20
+        self.PIN_O_BATTERY_SOC=21
+        self.PIN_O_BATTERY_CYCLES=22
+        self.PIN_O_BATTERY_VOLTAGE=23
+        self.PIN_O_BATTERY_TEMPERATURE=24
+        self.PIN_O_BATTERY_READY=25
         self.FRAMEWORK._run_in_context_thread(self.on_init)
 
 ########################################################################################################
@@ -53,11 +56,10 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         self.interval = None
         self.DEBUG = self.FRAMEWORK.create_debug_section()
 
-        self.total_consumption_sbc, self.total_power_from_pv_sbc = (-1, ) * 2
+        self.total_consumption_sbc, self.total_power_from_pv_sbc, self.inverter_state = (-1, ) * 3
 
         self.holdingRegister = {
             "batterySOC": ['f32', 210, self.PIN_O_BATTERY_SOC, 0, None],
-            "batteryCapacity": ['f32', 529, self.PIN_O_BATTERY_CAPACITY, 0.0, lambda x: x / 1000],
             "batteryCycles": ['f32', 194, self.PIN_O_BATTERY_CYCLES, 0, None],
             "batteryVoltage": ['f32', 216, self.PIN_O_BATTERY_VOLTAGE, 0.0, None],
             "batteryTemperature": ['f32', 214, self.PIN_O_BATTERY_TEMPERATURE, 0.0, None],
@@ -67,6 +69,7 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
             "pvConsumption": ['f32', 116, self.PIN_O_HOME_CONSUMPTION_PV, 0, None],
             "gridPower": ['f32', 252, self.PIN_O_TOTAL_POWER_FROM_GRID, 0, None],
             "inverterPower": ['f32', 575, self.PIN_O_INVERTER_POWER, 0, None],
+            "inverterStateInt": ['u16', 56, self.PIN_O_INVERTER_STATE_INT, 0, None],
             "batteryPower": ['s16', 582, self.PIN_O_POWER_FROM_BATTERY, 0, None],
             "totalYield": ['f32', 320, self.PIN_O_TOTAL_YIELD, 0.0, lambda x: x / 1000],
             "dailyYield": ['f32', 322, self.PIN_O_DAILY_YIELD, 0.0, lambda x: x / 1000],
@@ -80,6 +83,10 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
             "dc3_current": ['f32', 278, self.PIN_O_DC3_CURRENT, 0.0, None]
         }
 
+        self.inverter_State_Mapping = ["Off", "Init", "IsoMeas", "Grid Check", "Start Up", "-", "Feed In", "Throttled",
+                                       "Ext. Switch Off", "Update", "Standby", "Grid Sync", "Grid Pre-Check",
+                                       "Grid Switch Off", "Overheating", "Shutdown", "Inproper DC Voltage!", "ESB", "Unknown"]
+
 #############
 
     def on_interval(self):
@@ -89,13 +96,14 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
 
         client = None
         try:
-            self.DEBUG.set_value("creating client with IP:", ip_address)
-            self.DEBUG.set_value("creating client with Port:", port)
-            self.DEBUG.set_value("creating client with UnitID:", unit_id)
+            self.DEBUG.set_value("Connection IP:Port (UnitID)", ip_address + ":" + str(port) + " (" + str(unit_id) + ") ")
             client = ModbusTcpClient(ip_address, port)
             client.connect()
 
             self.read_power_values(client, unit_id)
+        except Exception as err:
+            self.DEBUG.set_value("Last exception msg logged", err.message)
+            raise
         finally:
             if client:
                 client.close()
@@ -106,11 +114,11 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
         for register in self.holdingRegister:
             value = 0
             if self.holdingRegister[register][0] == 'u16':
-                value = Kostalmodbus14180.read_u16_1(client, unit_id, self.holdingRegister[register][1])
+                value = self.read_u16_1(client, unit_id, self.holdingRegister[register][1])
             elif self.holdingRegister[register][0] == 's16':
-                value = Kostalmodbus14180.read_s16_1(client, unit_id, self.holdingRegister[register][1])
+                value = self.read_s16_1(client, unit_id, self.holdingRegister[register][1])
             elif self.holdingRegister[register][0] == 'f32':
-                value = Kostalmodbus14180.read_32float_2(client, unit_id, self.holdingRegister[register][1])
+                value = self.read_32float_2(client, unit_id, self.holdingRegister[register][1])
 
             self.DEBUG.set_value(register, value)  # set Debug raw value
 
@@ -138,6 +146,11 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
             self._set_output_value(self.PIN_O_TOTAL_POWER_FROM_PV, total_power_from_pv)
             self.total_power_from_pv_sbc = total_power_from_pv
 
+        inverter_state = self.getInverterString(self.holdingRegister['inverterStateInt'])
+        if self.inverter_state != inverter_state:
+            self.inverter_state = inverter_state
+            self.PIN_O_INVERTER_STATE = inverter_state
+
     #############
 
     def on_init(self):
@@ -153,29 +166,40 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
                 self.interval.set_interval(self._get_input_value(self.PIN_I_FETCH_INTERVAL) * 1000, self.on_interval)
                 self.interval.start()
 
-    @staticmethod
-    def read_u16_1(client, unit_id, reg_addr):
+    def read_u16_1(self, client, unit_id, reg_addr):
         result = client.read_holding_registers(reg_addr, 1, unit=unit_id)
         if not result.isError():
             return BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,
-                                                  wordorder=Endian.Little).decode_16bit_uint()
+                                                  wordorder=self.getWordOrder()).decode_16bit_uint()
         else:
             return -1
 
-    @staticmethod
-    def read_s16_1(client, unit_id, reg_addr):
+    def read_s16_1(self, client, unit_id, reg_addr):
         result = client.read_holding_registers(reg_addr, 1, unit=unit_id)
         if not result.isError():
             return BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,
-                                                  wordorder=Endian.Little).decode_16bit_int()
+                                                  wordorder=self.getWordOrder()).decode_16bit_int()
         else:
             return -1
 
-    @staticmethod
-    def read_32float_2(client, unit_id, reg_addr):
+    def read_32float_2(self, client, unit_id, reg_addr):
         result = client.read_holding_registers(reg_addr, 2, unit=unit_id)
         if not result.isError():
             return BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,
-                                                  wordorder=Endian.Little).decode_32bit_float()
+                                                  wordorder=self.getWordOrder()).decode_32bit_float()
         else:
             return -1
+
+    def getWordOrder(self):
+        if int(self._get_input_value(self.PIN_I_UNIT_ID)) == 1:
+            return Endian.Big
+        else:
+            return Endian.Little
+
+    #############
+
+    def getInverterString(self, inverter_status_int):
+        if 0 <= inverter_status_int < len(self.inverter_State_Mapping):
+            return self.inverter_State_Mapping[inverter_status_int]
+        else:
+            return "---"

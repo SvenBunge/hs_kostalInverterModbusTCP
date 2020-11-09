@@ -8,6 +8,7 @@
                 <input type="string" const_name="inverter_ip" init_value="127.0.0.1">IP of inverter</input>
                 <input type="number" const_name="port" init_value="1502">Modbus TCP Port (Kostal default: 1502)</input>
                 <input type="number" const_name="unit-id" init_value="71">Modbus unit id (Kostal default: 71)</input>
+                <input type="number" const_name="modbus_endian" init_value="0">0: LittleEndian (Modbus default); 1: BigEndian (Sunspec)</input>
             </inputs>
             <outputs>
                 <output type="number" const_name="home_consumption_battery" init_value="0">Own consumption from battery in W (sbc)</output>
@@ -17,6 +18,8 @@
                 <output type="number" const_name="total_power_from_grid" init_value="0">Total power from grid (neg: feed-in) (sbc)</output>
                 <output type="number" const_name="total_power_from_pv" init_value="0">Total power from PV generator (sbc)</output>
                 <output type="number" const_name="inverter_power" init_value="0">Power of inverter (AC/DC conversion) in W (sbc)</output>
+                <output type="number" const_name="inverter_state_int" init_value="-1">Inverter State as INT code(See manual) (sbc)</output>
+                <output type="string" const_name="inverter_state" init_value="">Inverter State as String (sbc)</output>
                 <output type="number" const_name="power_from_battery" init_value="0">Power from battery in W (neg: loading) (sbc)</output>
                 <output type="number" const_name="total_yield" init_value="0.0">Total yield in kWh (sbc)</output>
                 <output type="number" const_name="daily_yield" init_value="0.0">Daily yield in kWh (sbc)</output>
@@ -29,7 +32,6 @@
                 <output type="number" const_name="dc3_voltage" init_value="0.0">DC3 Voltage in V (sbc)</output>
                 <output type="number" const_name="dc3_current" init_value="0.0">DC3 Current in A (sbc)</output>
                 <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in % (sbc)</output>
-                <output type="number" const_name="battery_capacity" init_value="0.0">Battery Capacity in kWh (sbc)</output>
                 <output type="number" const_name="battery_cycles" init_value="0">Battery Cycles (sbc)</output>
                 <output type="number" const_name="battery_voltage" init_value="0.0">Battery Voltage in V (sbc)</output>
                 <output type="number" const_name="battery_temperature" init_value="0.0">Battery Temperature in °C (sbc)</output>

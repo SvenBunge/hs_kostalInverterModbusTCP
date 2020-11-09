@@ -41,10 +41,13 @@ This module fetches power information and states from home solar power inverters
 | 276 | 9.xxx | DC1 Voltage in V (sbc) | Actual Voltage of the 3. MPP String - zero if a battery is connected! |
 | 268 | 9.xxx | DC1 Current in A (sbc) | Actual Current of the 3. MPP String - zero if a battery is connected! |
 | 514 | 6.010 | Battery SOC in % (sbc) | Contains the level of the battery in % |
-| 529 | 9.xxx | Battery Capacity in kWh (sbc) | Capacity of the Battery (if connected) |
 | 194 | 7.001 | Battery Cycles (sbc) | Full cycles of battery unloading/loading (if connected) |
 | 216 | 9.xxx | Battery Voltage in V (sbc) | Actual Voltage of the Battery (if connected) |
 | 214 | 9.xxx | Battery Temperature in °C (sbc) | Actual Temperature of the Battery (if connected) |
+
+#### Removed because not working
+
+| 529 | 9.xxx | Battery Capacity in kWh (sbc) | Capacity of the Battery (if connected) |
 
 All outputs are only triggered by a change (sbc).
 *) Yield: If the battery is loaded DC/DC, the amount of energy is not included in this value. Work around: Add the SOC / 100 * battery capacity to get it approximated.
