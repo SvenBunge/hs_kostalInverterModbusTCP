@@ -146,10 +146,10 @@ class Kostalmodbus14180(hsl20_3.BaseModule):
             self._set_output_value(self.PIN_O_TOTAL_POWER_FROM_PV, total_power_from_pv)
             self.total_power_from_pv_sbc = total_power_from_pv
 
-        inverter_state = self.getInverterString(self.holdingRegister['inverterStateInt'])
+        inverter_state = self.getInverterString(self.holdingRegister['inverterStateInt'][3])
         if self.inverter_state != inverter_state:
+            self._set_output_value(self.PIN_O_INVERTER_STATE, inverter_state)
             self.inverter_state = inverter_state
-            self.PIN_O_INVERTER_STATE = inverter_state
 
     #############
 

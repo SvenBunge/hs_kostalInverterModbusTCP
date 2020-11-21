@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Energiemanagement" context="kostalmodbus14180" id="14180" name="kostalmodbus" sinternal_name="kostalmodbus" external_name="Kostal-Modbus-Reader (14180)" version="0.3">
+        <module category="Energiemanagement" context="kostalmodbus14180" id="14180" name="kostalmodbus" sinternal_name="kostalmodbus" external_name="Kostal-Modbus-Reader (14180)" version="0.4">
             <inputs>
                 <input type="number" const_name="switch" init_value="0">Switch on (1) / off (0)</input>
                 <input type="number" const_name="fetch_interval" init_value="5">Seconds of the interval to read power values (default: 5 secs)</input>
