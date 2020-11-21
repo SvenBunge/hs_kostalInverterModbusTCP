@@ -1,0 +1,194 @@
+<h1>hs<em>modbus</em>tcp</h1>
+
+<p>Gira Homeserver Logikmodule to poll power values from Kostal solar energy inverter via Modbus TCP.</p>
+
+<h2>Developer Notes</h2>
+
+<p>Developed for HomeServer 4.10. Licensed under the LGPL to keep all copies &amp; forks free as well!</p>
+
+<p>:exclamation: <strong>If you fork this project and distribute the module by your own CHANGE the Logikbaustein-ID because 14180 is only for this one and registered to @SvenBunge !!</strong> :exclamation:</p>
+
+<p>If something is wired, wrong or you need something: Just open an issue. Even better: Fix the issue by yourself and fill a pull request as well.</p>
+
+<h2>Installation</h2>
+
+<p>Download a <a rel="noopener" target="_blank" href="https://github.com/SvenBunge/hs_modbus_tcp/releases">release</a> and install the module / Logikbaustein like others in Experte.
+You find the module in the category "Energiemanagement". Just pic the IP address, port and unit-id of your inverter and wire the output to your communication objects. </p>
+
+<h2>Documentation</h2>
+
+<p>This module fetches power information and states from home solar power inverters of the manufactorer "Kostal". It has been testet with the <em>Kostal Plenticore Plus 10</em> with 2 Strings and an BYD battery attached. </p>
+
+<h3>Holding registers</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Register ID</th>
+  <th>DPT</th>
+  <th>Output</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>106</td>
+  <td>9.xxx</td>
+  <td>Own consumption from battery in W (sbc)</td>
+  <td>The power your home / building is 'eating' from your battery in Watt</td>
+</tr>
+<tr>
+  <td>108</td>
+  <td>9.xxx</td>
+  <td>Own consumption from grid in W (sbc)</td>
+  <td>The power your home / building is fetching from the grid in Watt</td>
+</tr>
+<tr>
+  <td>116</td>
+  <td>9.xxx</td>
+  <td>Own consumption from PV in W (sbc)</td>
+  <td>The power your home / building is powered by your Solar panels</td>
+</tr>
+<tr>
+  <td>xxx</td>
+  <td>9.xxx</td>
+  <td>Total current own consumption in W (sbc)</td>
+  <td>The power your home / building is using (Grid + Battery + PV)</td>
+</tr>
+<tr>
+  <td>252</td>
+  <td>9.xxx</td>
+  <td>Total power from grid (neg: feed-in) (sbc)</td>
+  <td>The total power the inverter is fetching or feeding from/to the grid. Neg. is feeding.</td>
+</tr>
+<tr>
+  <td>xxx</td>
+  <td>9.xxx</td>
+  <td>Total power from PV generator (sbc)</td>
+  <td>The total power your inverter fetches from your PV. This value could be limited by the grid feed-in limit (fe. 70%). This value is calculated of battery-charge, home consumption and feed-in power.</td>
+</tr>
+<tr>
+  <td>575</td>
+  <td>9.xxx</td>
+  <td>Power of inverter (AC/DC conversion) in W (sbc)</td>
+  <td>The power that is actually converted between AC and DC</td>
+</tr>
+<tr>
+  <td>582</td>
+  <td>9.xxx</td>
+  <td>Power from battery in W (neg: loading) (sbc)</td>
+  <td>The unload or load (neg.) of the battery in Watt</td>
+</tr>
+<tr>
+  <td>320</td>
+  <td>9.xxx</td>
+  <td>Total yield in kWh (sbc)</td>
+  <td>Total energy ever fetched over the inverter* - in kWh</td>
+</tr>
+<tr>
+  <td>322</td>
+  <td>9.xxx</td>
+  <td>Daily yield in kWh (sbc)</td>
+  <td>Energy fetched over the inverter today* - in kWh</td>
+</tr>
+<tr>
+  <td>326</td>
+  <td>9.xxx</td>
+  <td>Monthly yield in kWh (sbc)</td>
+  <td>Energy fetched over the inverter this month* - in kWh</td>
+</tr>
+<tr>
+  <td>324</td>
+  <td>9.xxx</td>
+  <td>Yearly yield in kWh (sbc)</td>
+  <td>Energy fetched over the inverter this year* - in kWh</td>
+</tr>
+<tr>
+  <td>266</td>
+  <td>9.xxx</td>
+  <td>DC1 Voltage in V (sbc)</td>
+  <td>Actual Voltage of the 1. MPP String</td>
+</tr>
+<tr>
+  <td>258</td>
+  <td>9.xxx</td>
+  <td>DC1 Current in A (sbc)</td>
+  <td>Actual Current of the 1. MPP String</td>
+</tr>
+<tr>
+  <td>276</td>
+  <td>9.xxx</td>
+  <td>DC1 Voltage in V (sbc)</td>
+  <td>Actual Voltage of the 2. MPP String</td>
+</tr>
+<tr>
+  <td>268</td>
+  <td>9.xxx</td>
+  <td>DC1 Current in A (sbc)</td>
+  <td>Actual Current of the 2. MPP String</td>
+</tr>
+<tr>
+  <td>276</td>
+  <td>9.xxx</td>
+  <td>DC1 Voltage in V (sbc)</td>
+  <td>Actual Voltage of the 3. MPP String - zero if a battery is connected!</td>
+</tr>
+<tr>
+  <td>268</td>
+  <td>9.xxx</td>
+  <td>DC1 Current in A (sbc)</td>
+  <td>Actual Current of the 3. MPP String - zero if a battery is connected!</td>
+</tr>
+<tr>
+  <td>514</td>
+  <td>6.010</td>
+  <td>Battery SOC in % (sbc)</td>
+  <td>Contains the level of the battery in %</td>
+</tr>
+<tr>
+  <td>194</td>
+  <td>7.001</td>
+  <td>Battery Cycles (sbc)</td>
+  <td>Full cycles of battery unloading/loading (if connected)</td>
+</tr>
+<tr>
+  <td>216</td>
+  <td>9.xxx</td>
+  <td>Battery Voltage in V (sbc)</td>
+  <td>Actual Voltage of the Battery (if connected)</td>
+</tr>
+<tr>
+  <td>214</td>
+  <td>9.xxx</td>
+  <td>Battery Temperature in °C (sbc)</td>
+  <td>Actual Temperature of the Battery (if connected)</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Removed because not working</h4>
+
+<p>| 529 | 9.xxx | Battery Capacity in kWh (sbc) | Capacity of the Battery (if connected) |</p>
+
+<p>All outputs are only triggered by a change (sbc).
+*) Yield: If the battery is loaded DC/DC, the amount of energy is not included in this value. Work around: Add the SOC / 100 * battery capacity to get it approximated.</p>
+
+<h2>Build from scratch</h2>
+
+<ol>
+<li>Download <a rel="noopener" target="_blank" href="http://www.hs-help.net/hshelp/gira/other_documentation/Schnittstelleninformationen.zip">Schnittstelleninformation</a> from GIRA Homepage</li>
+<li>Decompress zip, use <code>HSL SDK/2-0/framework</code> Folder for development.</li>
+<li>Checkout this repo to the <code>projects/modbus_tcp</code> folder</li>
+<li>Run the generator.pyc (<code>python2 ./generator.pyc modbus_tcp</code>)</li>
+<li>Import the module <code>release/1nnnn_kostalmodbus.hsl</code> into the Experte Software</li>
+<li>Use the module in your logic editor</li>
+</ol>
+
+<h2>Libraries</h2>
+
+<ul>
+<li>pymodbus 1.5.2 - https://github.com/riptideio/pymodbus </li>
+<li>six (in pymodbus folder) 1.15.0 - https://github.com/benjaminp/six</li>
+</ul>
+
+<p>The shipped libraries may distributed under a different license conditions. Respect those licenses as well!</p>

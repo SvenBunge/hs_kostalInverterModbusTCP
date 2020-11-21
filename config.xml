@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Energiemanagement" context="kostalmodbus14180" id="14180" name="kostalmodbus" sinternal_name="kostalmodbus" external_name="Kostal-Modbus-Reader (14180)" version="0.4">
+        <module category="Energiemanagement" context="kostalWRmodbusTCP14180" id="14180" name="kostalWR-modbusTCP" internal_name="kostalWR-modbusTCP" external_name="Kostal-Wechselrichter ModbusTCP Reader (14180)" version="0.5">
             <inputs>
                 <input type="number" const_name="switch" init_value="0">Switch on (1) / off (0)</input>
                 <input type="number" const_name="fetch_interval" init_value="5">Seconds of the interval to read power values (default: 5 secs)</input>
@@ -9,6 +9,8 @@
                 <input type="number" const_name="port" init_value="1502">Modbus TCP Port (Kostal default: 1502)</input>
                 <input type="number" const_name="unit-id" init_value="71">Modbus unit id (Kostal default: 71)</input>
                 <input type="number" const_name="modbus_endian" init_value="0">0: LittleEndian (Modbus default); 1: BigEndian (Sunspec)</input>
+                <input type="number" const_name="battery_at_DC3" init_value="0">Battery attached to DC3 - 0: No; 1: Yes</input>
+                <input type="number" const_name="total_sum_registers exists" init_value="0">Kostal Firmware >=1.45 - 0: No; 1: Yes</input>
             </inputs>
             <outputs>
                 <output type="number" const_name="home_consumption_battery" init_value="0">Own consumption from battery in W (sbc)</output>
@@ -36,6 +38,17 @@
                 <output type="number" const_name="battery_voltage" init_value="0.0">Battery Voltage in V (sbc)</output>
                 <output type="number" const_name="battery_temperature" init_value="0.0">Battery Temperature in °C (sbc)</output>
                 <output type="number" const_name="battery_ready" init_value="0">Battery ready (sbc)</output>
+                <output type="number" const_name="total_DC-charge_energy" init_value="0">Total DC charge energy (DC-side to battery) (sbc)</output>
+                <output type="number" const_name="total_DC-discharge_energy" init_value="0">Total DC discharge energy (DC-side from battery) (sbc)</output>
+                <output type="number" const_name="total_AC-charge_energy" init_value="0">Total AC charge energy (AC-side to battery) (sbc)</output>
+                <output type="number" const_name="total_AC-discharge_energy" init_value="0">Total AC discharge energy (battery to grid) (sbc)</output>
+                <output type="number" const_name="total_grid-charge_energy" init_value="0">Total AC charge energy (grid to battery) (sbc)</output>
+                <output type="number" const_name="total_DC_sum_energy" init_value="0">Total DC PV energy (sum of all PV inputs) (sbc)</output>
+                <output type="number" const_name="total_DC1_energy" init_value="0">Total DC energy from PV1 (sbc)</output>
+                <output type="number" const_name="total_DC2_energy" init_value="0">Total DC energy from PV2 (sbc)</output>
+                <output type="number" const_name="total_DC3_energy" init_value="0">Total DC energy from PV3 (sbc)</output>
+                <output type="number" const_name="total_ac-side_grid" init_value="0">Total energy AC-side to grid (sbc)</output>
+                <output type="number" const_name="total_dc_power" init_value="0">Total DC power (sum of all PV inputs) (sbc)</output>
             </outputs>
             <remanent_variables>
             </remanent_variables>

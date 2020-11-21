@@ -1,6 +1,7 @@
 
 venv/
-release/
+release/*.hsl
+release/*.hslz
 debug/
 
 .idea
