@@ -2,6 +2,7 @@
 venv/
 release/*.hsl
 release/*.hslz
+release/log14180.html
 debug/
 
 .idea
