@@ -1,13 +1,14 @@
-# hs_modbus_tcp
+# Kostal-Wechselrichter ModbusTCP (14180)
 Gira Homeserver Logikmodule to poll power values from Kostal solar energy inverter via Modbus TCP.
 
 ## Developer Notes
 
-Developed for HomeServer 4.10. Licensed under the LGPL to keep all copies & forks free as well!
+Developed for HomeServer 4.10. Works on 4.11 as well!
+Licensed under the LGPL to keep all copies & forks free!
 
 :exclamation: **If you fork this project and distribute the module by your own CHANGE the Logikbaustein-ID because 14180 is only for this one and registered to @SvenBunge !!** :exclamation:
 
-If something is wired, wrong or you need something: Just open an issue. Even better: Fix the issue by yourself and fill a pull request as well.
+If something is wired, wrong or you need something: Just open an issue. Even better: Fix the issue by yourself and fill a pull request.
 
 ## Installation
 

@@ -4,6 +4,7 @@ import pymodbus  # To not delete this module reference!!
 from pymodbus.constants import Endian
 from pymodbus.payload import BinaryPayloadDecoder
 from pymodbus.client.sync import ModbusTcpClient
+from pymodbus.exceptions import ConnectionException
 
 ##!!!!##################################################################################################
 #### Own written code can be placed above this commentblock . Do not change or delete commentblock! ####
@@ -72,6 +73,8 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         self.interval = None
         self.DEBUG = self.FRAMEWORK.create_debug_section()
 
+        self.skip_interval_counter = 0
+
         self.fetchMethods = {
             'f32': self.read_32float_2,
             'u16': self.read_u16_1,
@@ -136,6 +139,13 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
 #############
 
     def on_interval(self):
+
+        self.DEBUG.set_value("Due error skipping N intervals: ", self.skip_interval_counter)
+        
+        if self.skip_interval_counter > 0:
+            self.skip_interval_counter -= 1
+            return
+
         ip_address = str(self._get_input_value(self.PIN_I_INVERTER_IP))
         port = int(self._get_input_value(self.PIN_I_PORT))
         unit_id = int(self._get_input_value(self.PIN_I_UNIT_ID))
@@ -148,9 +158,16 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             client.connect()
 
             self.read_power_values(client, unit_id, read_total_regs)
+        except ConnectionException as con_err:
+            # Error during comm. Maybe temp. network error.
+            # Lets try it again in a 5 Minutes (when used with 5 seconds interval)
+            self.skip_interval_counter = 60
+            self.DEBUG.set_value("Last exception msg logged", con_err.message)
         except Exception as err:
+            # Error during comm. Maybe temp. network error.
+            # Lets try it again in a 30 Minutes (when used with 5 seconds interval)
+            self.skip_interval_counter = 360
             self.DEBUG.set_value("Last exception msg logged", err.message)
-            raise
         finally:
             if client:
                 client.close()
