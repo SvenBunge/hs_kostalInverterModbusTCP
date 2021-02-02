@@ -15,16 +15,21 @@ If something doesn't work like expected: Just open an issue. Even better: Fix th
 Download a [release](https://github.com/SvenBunge/hs_modbus_tcp/releases) and install the module / Logikbaustein like others in Experte.
 You find the module in the category "Energiemanagement". Just pic the IP address, port and unit-id of your inverter and wire the output to your communication objects. 
 
+The latest version of the module is also available in the [KNX-User Forum Download Section](https://service.knx-user-forum.de/?comm=download&id=14180)
+
 ## Documentation
 
 This module fetches power information and states from home solar power inverters of the manufacturer "Kostal". It has been tested with the *Kostal Plenticore Plus 10* with 2 strings and an BYD battery attached. 
 
 More [detailed documentation](doc/log14180.md)
 
+For further questions use the [Promotion Thread](https://knx-user-forum.de/forum/%C3%B6ffentlicher-bereich/knx-eib-forum/1559910-logikbaustein-kostal-wechselrichter-via-modbus-tcp-abfragen) of the KNX User Forum (German)
+
 ### Keep notice
 
-* All outputs are only triggered by a change (sbc).
-* Yield: If the battery is loaded DC/DC, the amount of energy is not included in this value. Work around: Add the SOC / 100 * battery capacity to get it approximated.
+* All outputs are triggered by a change value (sbc).
+* Yield value fields: If the battery is loaded DC/DC, the amount of energy is not included in those values and unloading the battery will increase the yield. Work around: Add the SOC / 100 * battery capacity to get it approximated. (Output number 12-14)
+  * Or update your inverter firmware, set input number 6 = 1 and use the new outputs: 26-34
 * Only voltage(U) and current(I) is fetched from the DC-Strings. If the power(P) in Watts is needed, just calculate them ( P = U * I ). At DC-Level this should be correct. 
 
 ## Build from scratch
@@ -35,6 +40,8 @@ More [detailed documentation](doc/log14180.md)
 4. Run the generator.pyc (`python2 ./generator.pyc hs_kostalInverterModbusTCP`)
 5. Import the module `release/14180_kostalInverterModbusTCP.hsl` into the Experte Software
 6. Use the module in your logic editor
+
+You can replace step 4 with the `./buildRelease.sh` script. With the help of the markdown2 python module (`pip install markdown2`) it creates the documentation and packages the `.hslz` file. This file is also installable in step 5 and adds the module documentation into the Experte-Tool.  
  
 ## Libraries
 
