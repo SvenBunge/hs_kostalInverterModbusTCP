@@ -1,5 +1,5 @@
 # Kostal-Wechselrichter ModbusTCP (14180)
-Gira Homeserver Logikmodule to poll power values from Kostal solar energy inverter via Modbus TCP.
+Gira Homeserver 4 Logikmodule to poll power values from Kostal solar energy inverter via Modbus TCP.
 
 ## Developer Notes
 
@@ -8,7 +8,7 @@ Licensed under the LGPL to keep all copies & forks free!
 
 :exclamation: **If you fork this project and distribute the module by your own CHANGE the Logikbaustein-ID because 14180 is only for this one and registered to @SvenBunge !!** :exclamation:
 
-If something is wired, wrong or you need something: Just open an issue. Even better: Fix the issue by yourself and fill a pull request.
+If something doesn't work like expected: Just open an issue. Even better: Fix the issue and fill a pull request.
 
 ## Installation
 
@@ -17,16 +17,15 @@ You find the module in the category "Energiemanagement". Just pic the IP address
 
 ## Documentation
 
-This module fetches power information and states from home solar power inverters of the manufactorer "Kostal". It has been testet with the *Kostal Plenticore Plus 10* with 2 Strings and an BYD battery attached. 
+This module fetches power information and states from home solar power inverters of the manufacturer "Kostal". It has been tested with the *Kostal Plenticore Plus 10* with 2 strings and an BYD battery attached. 
 
 More [detailed documentation](doc/log14180.md)
 
-#### Removed because not working
+### Keep notice
 
-| 529 | 9.xxx | Battery Capacity in kWh (sbc) | Capacity of the Battery (if connected) |
-
-All outputs are only triggered by a change (sbc).
-*) Yield: If the battery is loaded DC/DC, the amount of energy is not included in this value. Work around: Add the SOC / 100 * battery capacity to get it approximated.
+* All outputs are only triggered by a change (sbc).
+* Yield: If the battery is loaded DC/DC, the amount of energy is not included in this value. Work around: Add the SOC / 100 * battery capacity to get it approximated.
+* Only voltage(U) and current(I) is fetched from the DC-Strings. If the power(P) in Watts is needed, just calculate them ( P = U * I ). At DC-Level this should be correct. 
 
 ## Build from scratch
 
