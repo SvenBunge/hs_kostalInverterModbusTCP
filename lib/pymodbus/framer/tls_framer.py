@@ -2,7 +2,7 @@ import struct
 from pymodbus.exceptions import ModbusIOException
 from pymodbus.exceptions import InvalidMessageReceivedException
 from pymodbus.utilities import hexlify_packets
-from pymodbus.framer import ModbusFramer, SOCKET_FRAME_HEADER
+from pymodbus.framer import ModbusFramer, TLS_FRAME_HEADER
 
 # --------------------------------------------------------------------------- #
 # Logging
@@ -11,27 +11,19 @@ import logging
 _logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------------------- #
-# Modbus TCP Message
+# Modbus TLS Message
 # --------------------------------------------------------------------------- #
 
 
-class ModbusSocketFramer(ModbusFramer):
-    """ Modbus Socket Frame controller
+class ModbusTlsFramer(ModbusFramer):
+    """ Modbus TLS Frame controller
 
-    Before each modbus TCP message is an MBAP header which is used as a
-    message frame.  It allows us to easily separate messages as follows::
+    No prefix MBAP header before decrypted PDU is used as a message frame for
+    Modbus Security Application Protocol.  It allows us to easily separate
+    decrypted messages which is PDU as follows:
 
-        [         MBAP Header         ] [ Function Code] [ Data ] \
-        [ tid ][ pid ][ length ][ uid ]
-          2b     2b     2b        1b           1b           Nb
-
-        while len(message) > 0:
-            tid, pid, length`, uid = struct.unpack(">HHHB", message)
-            request = message[0:7 + length - 1`]
-            message = [7 + length - 1:]
-
-        * length = uid + function code + data
-        * The -1 is to account for the uid byte
+        [ Function Code] [ Data ]
+          1b               Nb
     """
 
     def __init__(self, decoder, client=None):
@@ -40,8 +32,8 @@ class ModbusSocketFramer(ModbusFramer):
         :param decoder: The decoder factory implementation to use
         """
         self._buffer = b''
-        self._header = {'tid': 0, 'pid': 0, 'len': 0, 'uid': 0}
-        self._hsize = 0x07
+        self._header = {}
+        self._hsize = 0x0
         self.decoder = decoder
         self.client = client
 
@@ -53,15 +45,8 @@ class ModbusSocketFramer(ModbusFramer):
         Check and decode the next frame Return true if we were successful
         """
         if self.isFrameReady():
-            (self._header['tid'], self._header['pid'],
-             self._header['len'], self._header['uid']) = struct.unpack(
-                '>HHHB', self._buffer[0:self._hsize])
-
-            # someone sent us an error? ignore it
-            if self._header['len'] < 2:
-                self.advanceFrame()
             # we have at least a complete message, continue
-            elif len(self._buffer) - self._hsize + 1 >= self._header['len']:
+            if len(self._buffer) - self._hsize >= 1:
                 return True
         # we don't have enough of a message yet, wait
         return False
@@ -72,9 +57,8 @@ class ModbusSocketFramer(ModbusFramer):
         it or determined that it contains an error. It also has to reset the
         current frame header handle
         """
-        length = self._hsize + self._header['len'] - 1
-        self._buffer = self._buffer[length:]
-        self._header = {'tid': 0, 'pid': 0, 'len': 0, 'uid': 0}
+        self._buffer = b''
+        self._header = {}
 
     def isFrameReady(self):
         """ Check if we should continue decode logic
@@ -97,28 +81,24 @@ class ModbusSocketFramer(ModbusFramer):
 
         :returns: The next full frame buffer
         """
-        length = self._hsize + self._header['len'] - 1
-        return self._buffer[self._hsize:length]
+        return self._buffer[self._hsize:]
 
     def populateResult(self, result):
         """
         Populates the modbus result with the transport specific header
-        information (pid, tid, uid, checksum, etc)
+        information (no header before PDU in decrypted message)
 
         :param result: The response packet
         """
-        result.transaction_id = self._header['tid']
-        result.protocol_id = self._header['pid']
-        result.unit_id = self._header['uid']
+        return
 
     # ----------------------------------------------------------------------- #
     # Public Member Functions
     # ----------------------------------------------------------------------- #
     def decode_data(self, data):
         if len(data) > self._hsize:
-            tid, pid, length, uid, fcode = struct.unpack(SOCKET_FRAME_HEADER,
-                                                         data[0:self._hsize+1])
-            return dict(tid=tid, pid=pid, length=length, unit=uid, fcode=fcode)
+            (fcode,) = struct.unpack(TLS_FRAME_HEADER, data[0:self._hsize+1])
+            return dict(fcode=fcode)
         return dict()
 
     def processIncomingPacket(self, data, callback, unit, **kwargs):
@@ -143,27 +123,22 @@ class ModbusSocketFramer(ModbusFramer):
         """
         if not isinstance(unit, (list, tuple)):
             unit = [unit]
-        single = kwargs.get("single", False)
+        # no unit id for Modbus Security Application Protocol
+        single = kwargs.get("single", True)
         _logger.debug("Processing: " + hexlify_packets(data))
         self.addToFrame(data)
-        while True:
-            if self.isFrameReady():
-                if self.checkFrame():
-                    if self._validate_unit_id(unit, single):
-                        self._process(callback)
-                    else:
-                        _logger.debug("Not a valid unit id - {}, "
-                                      "ignoring!!".format(self._header['uid']))
-                        self.resetFrame()
+
+        if self.isFrameReady():
+            if self.checkFrame():
+                if self._validate_unit_id(unit, single):
+                    self._process(callback)
                 else:
-                    _logger.debug("Frame check failed, ignoring!!")
+                    _logger.debug("Not in valid unit id - {}, "
+                                  "ignoring!!".format(unit))
                     self.resetFrame()
             else:
-                if len(self._buffer):
-                    # Possible error ???
-                    if self._header['len'] < 2:
-                        self._process(callback, error=True)
-                break
+                _logger.debug("Frame check failed, ignoring!!")
+                self.resetFrame()
 
     def _process(self, callback, error=False):
         """
@@ -190,7 +165,6 @@ class ModbusSocketFramer(ModbusFramer):
         check for millisecond delays).
         """
         self._buffer = b''
-        self._header = {'tid': 0, 'pid': 0, 'len': 0, 'uid': 0}
 
     def getRawFrame(self):
         """
@@ -204,14 +178,8 @@ class ModbusSocketFramer(ModbusFramer):
         :param message: The populated request/response to send
         """
         data = message.encode()
-        packet = struct.pack(SOCKET_FRAME_HEADER,
-                             message.transaction_id,
-                             message.protocol_id,
-                             len(data) + 2,
-                             message.unit_id,
-                             message.function_code)
+        packet = struct.pack(TLS_FRAME_HEADER, message.function_code)
         packet += data
         return packet
-
 
 # __END__

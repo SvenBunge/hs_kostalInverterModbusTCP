@@ -54,7 +54,7 @@ class ModbusRtuFramer(ModbusFramer):
         (1/Baud)(bits) = delay seconds
     """
 
-    def __init__(self, decoder, client):
+    def __init__(self, decoder, client=None):
         """ Initializes a new instance of the framer
 
         :param decoder: The decoder factory implementation to use
@@ -91,8 +91,13 @@ class ModbusRtuFramer(ModbusFramer):
             data = self._buffer[:frame_size - 2]
             crc = self._buffer[frame_size - 2:frame_size]
             crc_val = (byte2int(crc[0]) << 8) + byte2int(crc[1])
-            return checkCRC(data, crc_val)
-        except (IndexError, KeyError):
+            if checkCRC(data, crc_val):
+                return True
+            else:
+                _logger.debug("CRC invalid, discarding header!!")
+                self.resetFrame()
+                return False
+        except (IndexError, KeyError, struct.error):
             return False
 
     def advanceFrame(self):
@@ -132,7 +137,13 @@ class ModbusRtuFramer(ModbusFramer):
 
         :returns: True if ready, False otherwise
         """
-        return len(self._buffer) > self._hsize
+        if len(self._buffer) > self._hsize:
+            if not self._header:
+                self.populateHeader()
+
+            return self._header and len(self._buffer) >= self._header['len']
+        else:
+            return False
 
     def populateHeader(self, data=None):
         """
@@ -186,6 +197,7 @@ class ModbusRtuFramer(ModbusFramer):
         :param result: The response packet
         """
         result.unit_id = self._header['uid']
+        result.transaction_id = self._header['uid']
 
     # ----------------------------------------------------------------------- #
     # Public Member Functions
@@ -197,7 +209,7 @@ class ModbusRtuFramer(ModbusFramer):
         This takes in a new request packet, adds it to the current
         packet stream, and performs framing on it. That is, checks
         for complete messages, and once found, will process all that
-        exist.  This handles the case when we read N + 1 or 1 / N
+        exist.  This handles the case when we read N + 1 or 1 // N
         messages at a time instead of 1.
 
         The processed and decoded messages are pushed to the callback
@@ -206,8 +218,9 @@ class ModbusRtuFramer(ModbusFramer):
         :param data: The new packet data
         :param callback: The function to send results to
         :param unit: Process if unit id matches, ignore otherwise (could be a
-        list of unit ids (server) or single unit id(client/server)
+               list of unit ids (server) or single unit id(client/server)
         :param single: True or False (If True, ignore unit address validation)
+
         """
         if not isinstance(unit, (list, tuple)):
             unit = [unit]
@@ -221,6 +234,9 @@ class ModbusRtuFramer(ModbusFramer):
                     _logger.debug("Not a valid unit id - {}, "
                                   "ignoring!!".format(self._header['uid']))
                     self.resetFrame()
+            else:
+                _logger.debug("Frame check failed, ignoring!!")
+                self.resetFrame()
         else:
             _logger.debug("Frame - [{}] not ready".format(data))
 
@@ -235,6 +251,7 @@ class ModbusRtuFramer(ModbusFramer):
                              message.unit_id,
                              message.function_code) + data
         packet += struct.pack(">H", computeCRC(packet))
+        message.transaction_id = message.unit_id  # Ensure that transaction is actually the unit id for serial comms
         return packet
 
     def sendPacket(self, message):
@@ -243,9 +260,8 @@ class ModbusRtuFramer(ModbusFramer):
         :param message: Message to be sent over the bus
         :return:
         """
-        # _logger.debug("Current transaction state - {}".format(
-        #     ModbusTransactionState.to_string(self.client.state))
-        # )
+        start = time.time()
+        timeout = start + self.client.timeout
         while self.client.state != ModbusTransactionState.IDLE:
             if self.client.state == ModbusTransactionState.TRANSACTION_COMPLETE:
                 ts = round(time.time(), 6)
@@ -253,7 +269,7 @@ class ModbusRtuFramer(ModbusFramer):
                               "Current Time stamp - {}".format(
                     self.client.last_frame_end, ts)
                 )
-                
+
                 if self.client.last_frame_end:
                     idle_time = self.client.idle_time()
                     if round(ts - idle_time, 6) <= self.client.silent_interval:
@@ -267,14 +283,14 @@ class ModbusRtuFramer(ModbusFramer):
                     time.sleep(self.client.silent_interval)
                 self.client.state = ModbusTransactionState.IDLE
             else:
-                _logger.debug("Sleeping")
-                time.sleep(self.client.silent_interval)
+                if time.time() > timeout:
+                    _logger.debug("Spent more time than the read time out, "
+                                  "resetting the transaction to IDLE")
+                    self.client.state = ModbusTransactionState.IDLE
+                else:
+                    _logger.debug("Sleeping")
+                    time.sleep(self.client.silent_interval)
         size = self.client.send(message)
-        # if size:
-        #     _logger.debug("Changing transaction state from 'SENDING' "
-        #                   "to 'WAITING FOR REPLY'")
-        #     self.client.state = ModbusTransactionState.WAITING_FOR_REPLY
-
         self.client.last_frame_end = round(time.time(), 6)
         return size
 
