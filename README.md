@@ -3,7 +3,7 @@ Gira Homeserver Logikmodule to poll power values from Kostal solar energy invert
 
 ## Developer Notes
 
-Developed for HomeServer 4.10. Works on 4.11 as well!
+Developed for the GIRA HomeServer 4.10 / 4.11!
 Licensed under the LGPL to keep all copies & forks free!
 
 :exclamation: **If you fork this project and distribute the module by your own CHANGE the Logikbaustein-ID because 14180 is only for this one and registered to @SvenBunge !!** :exclamation:
