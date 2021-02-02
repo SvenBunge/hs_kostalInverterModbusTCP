@@ -162,12 +162,12 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             # Error during comm. Maybe temp. network error.
             # Lets try it again in a 5 Minutes (when used with 5 seconds interval)
             self.skip_interval_counter = 60
-            self.DEBUG.set_value("Last exception msg logged", con_err.message)
+            self.DEBUG.set_value("Last exception msg logged", "retrying after 60 intervals: " + con_err)
         except Exception as err:
             # Error during comm. Maybe temp. network error.
             # Lets try it again in a 30 Minutes (when used with 5 seconds interval)
             self.skip_interval_counter = 360
-            self.DEBUG.set_value("Last exception msg logged", err.message)
+            self.DEBUG.set_value("Last exception msg logged", "retrying after 360 intervals: " + err.message)
         finally:
             if client:
                 client.close()
