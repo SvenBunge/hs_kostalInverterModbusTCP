@@ -71,6 +71,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         self.INTERNAL_POWER_SCALEFACTOR = 4
 
         self.interval = None
+        self.client = None
         self.DEBUG = self.FRAMEWORK.create_debug_section()
 
         self.skip_interval_counter = 0
@@ -151,26 +152,24 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         unit_id = int(self._get_input_value(self.PIN_I_UNIT_ID))
         read_total_regs = bool(self._get_input_value(self.PIN_I_TOTAL_SUM_REGISTERS_EXISTS))
 
-        client = None
         try:
             self.DEBUG.set_value("Connection IP:Port (UnitID)", ip_address + ":" + str(port) + " (" + str(unit_id) + ") ")
-            client = ModbusTcpClient(ip_address, port)
-            client.connect()
+            if self.client is None:
+                self.client = ModbusTcpClient(ip_address, port)
+            if self.client.is_socket_open() is False:
+                self.client.connect()
 
-            self.read_power_values(client, unit_id, read_total_regs)
+            self.read_power_values(self.client, unit_id, read_total_regs)
         except ConnectionException as con_err:
             # Error during comm. Maybe temp. network error.
             # Lets try it again in a 5 Minutes (when used with 5 seconds interval)
             self.skip_interval_counter = 60
-            self.DEBUG.set_value("Last exception msg logged", "retrying after 60 intervals: " + con_err)
+            self.DEBUG.set_value("Last exception msg logged", "retrying after 60 intervals: " + con_err.message)
         except Exception as err:
             # Error during comm. Maybe temp. network error.
             # Lets try it again in a 30 Minutes (when used with 5 seconds interval)
             self.skip_interval_counter = 360
             self.DEBUG.set_value("Last exception msg logged", "retrying after 360 intervals: " + err.message)
-        finally:
-            if client:
-                client.close()
 
     def read_power_values(self, client, unit_id, read_total_regs):
 
@@ -224,7 +223,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             self._set_output_value(self.PIN_O_TOTAL_POWER_FROM_PV, total_power_from_pv)
             self.total_power_from_pv_sbc = total_power_from_pv
 
-        ## Inverter state integer to string
+        # Inverter state integer to string
         inverter_state = self.convert_to_inverter_statusstring(self.registers[self.PIN_O_INVERTER_STATE_INT]['lastVal'])
         if self.inverter_state != inverter_state:
             self._set_output_value(self.PIN_O_INVERTER_STATE, inverter_state)
