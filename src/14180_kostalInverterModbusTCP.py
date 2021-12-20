@@ -22,7 +22,6 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         self.PIN_I_INVERTER_IP=3
         self.PIN_I_PORT=4
         self.PIN_I_UNIT_ID=5
-        self.PIN_I_TOTAL_SUM_REGISTERS_EXISTS=6
         self.PIN_O_HOME_CONSUMPTION_BATTERY=1
         self.PIN_O_HOME_CONSUMPTION_GRID=2
         self.PIN_O_HOME_CONSUMPTION_PV=3
@@ -88,15 +87,14 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
 
         self.internalRegisters = {
             self.INTERNAL_BATTERY: { 'type': 'u16', 'regDec': 588, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'Internal:Battery attached'},
-            self.INTERNAL_ENDIAN: { 'type': 'u16', 'regDec': 5, 'lastVal': 0, 'options': 20, 'calc': None, 'name': 'Internal:Endianes'},
+            self.INTERNAL_ENDIAN: { 'type': 'u16', 'regDec': 5, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'Internal:Endianes'},
             self.INTERNAL_ENERGY_SCALEFACTOR: { 'type': 's16', 'regDec': 579, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'Internal:Energy scalefactor'},
             self.INTERNAL_POWER_SCALEFACTOR: { 'type': 's16', 'regDec': 576, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'Internal:Power scalefactor'}
         }
 
         ## All Outputs as a dictionary. The key is the number of the output.
-        # options: NM =>
+        # options: M =>
         #   M => Battery options - 0: Don't care, 1: only without battery, 2: only with battery
-        #   N => Firmware 1.45, new sum registers: 0: Don't care, 1: don't fetch those regs, 2: fetch those regs
         self.registers = {
             self.PIN_O_BATTERY_SOC: { 'type': 'f32', 'regDec': 210, 'lastVal': 0, 'options': 2, 'calc': None, 'name': 'battery SOC'},
             self.PIN_O_BATTERY_CYCLES: { 'type': 'f32', 'regDec': 194, 'lastVal': 0, 'options': 2, 'calc': None, 'name': 'battery cycles'},
@@ -120,17 +118,17 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             self.PIN_O_DC2_CURRENT: { 'type': 'f32', 'regDec': 268, 'lastVal': 0.0, 'options': 0, 'calc': None, 'name': 'PV DC2 current'},
             self.PIN_O_DC3_VOLTAGE: { 'type': 'f32', 'regDec': 286, 'lastVal': 0.0, 'options': 1, 'calc': None, 'name': 'PV DC3 voltage'},
             self.PIN_O_DC3_CURRENT: { 'type': 'f32', 'regDec': 278, 'lastVal': 0.0, 'options': 1, 'calc': None, 'name': 'PV DC3 current'},
-            self.PIN_O_TOTAL_DC_CHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1046, 'lastVal': 0, 'options': 22, 'calc': lambda x: x / 1000, 'name': 'total dc charge energy'},
-            self.PIN_O_TOTAL_DC_DISCHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1048, 'lastVal': 0, 'options': 22, 'calc': lambda x: x / 1000, 'name': 'total dc discharge energy'},
-            self.PIN_O_TOTAL_AC_CHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1050, 'lastVal': 0, 'options': 22, 'calc': lambda x: x / 1000, 'name': 'total ac charge energy'},
-            self.PIN_O_TOTAL_AC_DISCHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1052, 'lastVal': 0, 'options': 22, 'calc': lambda x: x / 1000, 'name': 'total ac discharge energy'},
-            self.PIN_O_TOTAL_GRID_CHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1054, 'lastVal': 0, 'options': 22, 'calc': lambda x: x / 1000, 'name': 'total grid charge energy'},
-            self.PIN_O_TOTAL_DC_SUM_ENERGY: { 'type': 'r32e', 'regDec': 1056, 'lastVal': 0, 'options': 20, 'calc': lambda x: x / 1000, 'name': 'total DC PV energy'},
-            self.PIN_O_TOTAL_DC1_ENERGY: { 'type': 'r32e', 'regDec': 1058, 'lastVal': 0, 'options': 20, 'calc': lambda x: x / 1000, 'name': 'total DC1 PV energy'},
-            self.PIN_O_TOTAL_DC2_ENERGY: { 'type': 'r32e', 'regDec': 1060, 'lastVal': 0, 'options': 20, 'calc': lambda x: x / 1000, 'name': 'total DC2 PV energy'},
-            self.PIN_O_TOTAL_DC3_ENERGY: { 'type': 'r32e', 'regDec': 1062, 'lastVal': 0, 'options': 21, 'calc': lambda x: x / 1000, 'name': 'total DC3 PV energy'},
-            self.PIN_O_TOTAL_AC_SIDE_GRID: { 'type': 'r32e', 'regDec': 1064, 'lastVal': 0, 'options': 20, 'calc': lambda x: x / 1000, 'name': 'total AC into grid'},
-            self.PIN_O_TOTAL_DC_POWER: { 'type': 'r32p', 'regDec': 1066, 'lastVal': 0, 'options': 20, 'calc': None, 'name': 'total DC power'},
+            self.PIN_O_TOTAL_DC_CHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1046, 'lastVal': 0, 'options': 2, 'calc': lambda x: x / 1000, 'name': 'total dc charge energy'},
+            self.PIN_O_TOTAL_DC_DISCHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1048, 'lastVal': 0, 'options': 2, 'calc': lambda x: x / 1000, 'name': 'total dc discharge energy'},
+            self.PIN_O_TOTAL_AC_CHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1050, 'lastVal': 0, 'options': 2, 'calc': lambda x: x / 1000, 'name': 'total ac charge energy'},
+            self.PIN_O_TOTAL_AC_DISCHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1052, 'lastVal': 0, 'options': 2, 'calc': lambda x: x / 1000, 'name': 'total ac discharge energy'},
+            self.PIN_O_TOTAL_GRID_CHARGE_ENERGY: { 'type': 'r32e', 'regDec': 1054, 'lastVal': 0, 'options': 2, 'calc': lambda x: x / 1000, 'name': 'total grid charge energy'},
+            self.PIN_O_TOTAL_DC_SUM_ENERGY: { 'type': 'r32e', 'regDec': 1056, 'lastVal': 0, 'options': 0, 'calc': lambda x: x / 1000, 'name': 'total DC PV energy'},
+            self.PIN_O_TOTAL_DC1_ENERGY: { 'type': 'r32e', 'regDec': 1058, 'lastVal': 0, 'options': 0, 'calc': lambda x: x / 1000, 'name': 'total DC1 PV energy'},
+            self.PIN_O_TOTAL_DC2_ENERGY: { 'type': 'r32e', 'regDec': 1060, 'lastVal': 0, 'options': 0, 'calc': lambda x: x / 1000, 'name': 'total DC2 PV energy'},
+            self.PIN_O_TOTAL_DC3_ENERGY: { 'type': 'r32e', 'regDec': 1062, 'lastVal': 0, 'options': 1, 'calc': lambda x: x / 1000, 'name': 'total DC3 PV energy'},
+            self.PIN_O_TOTAL_AC_SIDE_GRID: { 'type': 'r32e', 'regDec': 1064, 'lastVal': 0, 'options': 0, 'calc': lambda x: x / 1000, 'name': 'total AC into grid'},
+            self.PIN_O_TOTAL_DC_POWER: { 'type': 'r32p', 'regDec': 1066, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'total DC power'},
         }
 
         self.inverter_State_Mapping = ["Off", "Init", "IsoMeas", "Grid Check", "Start Up", "-", "Feed In", "Throttled",
@@ -150,7 +148,6 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         ip_address = str(self._get_input_value(self.PIN_I_INVERTER_IP))
         port = int(self._get_input_value(self.PIN_I_PORT))
         unit_id = int(self._get_input_value(self.PIN_I_UNIT_ID))
-        read_total_regs = bool(self._get_input_value(self.PIN_I_TOTAL_SUM_REGISTERS_EXISTS))
 
         try:
             self.DEBUG.set_value("Connection IP:Port (UnitID)", ip_address + ":" + str(port) + " (" + str(unit_id) + ") ")
@@ -159,7 +156,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             if self.client.is_socket_open() is False:
                 self.client.connect()
 
-            self.read_power_values(self.client, unit_id, read_total_regs)
+            self.read_power_values(self.client, unit_id)
         except ConnectionException as con_err:
             # Error during comm. Maybe temp. network error.
             # Lets try it again in a 5 Minutes (when used with 5 seconds interval)
@@ -171,11 +168,11 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             self.skip_interval_counter = 360
             self.DEBUG.set_value("Last exception msg logged", "retrying after 360 intervals: " + err.message)
 
-    def read_power_values(self, client, unit_id, read_total_regs):
+    def read_power_values(self, client, unit_id):
 
         # fetch configuration registers
         for internalNum in self.internalRegisters:
-            if KostalInverterModbusTCP14180.must_read_register(self.internalRegisters, internalNum, False, read_total_regs) is False:
+            if KostalInverterModbusTCP14180.must_read_register(self.internalRegisters, internalNum, False) is False:
                 continue
 
             func = self.fetchMethods.get(self.internalRegisters[internalNum]['type'])  # Get handler method
@@ -291,7 +288,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             return "---"
 
     @staticmethod
-    def must_read_register(registers, output_num, battery, read_total_regs):
+    def must_read_register(registers, output_num, battery):
         register = registers[output_num]
         reg_option = register['options']
 
@@ -301,12 +298,6 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         if battery is True and battery_option is 1:
             read_reg = False
         elif battery is False and battery_option is 2:
-            read_reg = False
-
-        reg_option = reg_option / 10
-        if read_total_regs is True and reg_option is 1:
-            read_reg = False
-        elif read_total_regs is False and reg_option is 2:
             read_reg = False
 
         return read_reg
