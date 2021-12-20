@@ -184,7 +184,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
 
         # fetch all registers
         for outputNum in self.registers:
-            if KostalInverterModbusTCP14180.must_read_register(self.registers, outputNum, battery, read_total_regs) is False:
+            if KostalInverterModbusTCP14180.must_read_register(self.registers, outputNum, battery) is False:
                 continue
 
             func = self.fetchMethods.get(self.registers[outputNum]['type']) # Get handler method

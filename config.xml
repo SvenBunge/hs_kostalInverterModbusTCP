@@ -8,7 +8,6 @@
                 <input type="string" const_name="inverter_ip" init_value="127.0.0.1">IP of inverter</input>
                 <input type="number" const_name="port" init_value="1502">Modbus TCP Port (Kostal default: 1502)</input>
                 <input type="number" const_name="unit-id" init_value="71">Modbus unit id (Kostal default: 71)</input>
-                <input type="number" const_name="total_sum_registers exists" init_value="0">Kostal Firmware >=1.45 - 0: No; 1: Yes</input>
             </inputs>
             <outputs>
                 <output type="number" const_name="home_consumption_battery" init_value="0">Own consumption from battery in W (sbc)</output>
