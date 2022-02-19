@@ -78,7 +78,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         self.fetchMethods = {
             'f32': self.read_32float_2,
             'u16': self.read_u16_1,
-            's16': self.read_s16_1,
+            's16': self.read16float_power_scaled,
             'r32e': self.read32float_energy_scaled,
             'r32p': self.read32float_power_scaled
         }
@@ -105,7 +105,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             self.PIN_O_HOME_CONSUMPTION_GRID: { 'type': 'f32', 'regDec': 108, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'home consumption grid'},
             self.PIN_O_HOME_CONSUMPTION_PV: { 'type': 'f32', 'regDec': 116, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'home consumption PV'},
             self.PIN_O_TOTAL_POWER_FROM_GRID: { 'type': 'f32', 'regDec': 252, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'total grid consumption'},
-            self.PIN_O_INVERTER_POWER: { 'type': 'f32', 'regDec': 575, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'inverter power'},
+            self.PIN_O_INVERTER_POWER: { 'type': 's16', 'regDec': 575, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'inverter power'},
             self.PIN_O_INVERTER_STATE_INT: { 'type': 'u16', 'regDec': 56, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'inverter state INT'},
             self.PIN_O_POWER_FROM_BATTERY: { 'type': 's16', 'regDec': 582, 'lastVal': 0, 'options': 2, 'calc': None, 'name': 'power from battery'},
             self.PIN_O_TOTAL_YIELD: { 'type': 'f32', 'regDec': 320, 'lastVal': 0.0, 'options': 0, 'calc': lambda x: x / 1000, 'name': 'total yield'},
@@ -249,11 +249,12 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         else:
             return -1
 
-    def read_s16_1(self, client, unit_id, reg_addr):
+    def read16float_power_scaled(self, client, unit_id, reg_addr):
         result = client.read_holding_registers(reg_addr, 1, unit=unit_id)
         if not result.isError():
-            return BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,
+            int16Val = BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,
                                                       wordorder=self.word_order()).decode_16bit_int()
+            return int16Val * 10 ** self.internalRegisters[self.INTERNAL_POWER_SCALEFACTOR]['lastVal']
         else:
             return -1
 
