@@ -78,6 +78,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         self.fetchMethods = {
             'f32': self.read_32float_2,
             'u16': self.read_u16_1,
+            'u32': self.read_u32_1,
             'i16': self.read_i16_1,
             'scale16': self.read16float_power_scaled,
             'r32e': self.read32float_energy_scaled,
@@ -107,7 +108,8 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             self.PIN_O_HOME_CONSUMPTION_PV: {'type': 'f32', 'regDec': 116, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'home consumption PV'},
             self.PIN_O_TOTAL_POWER_FROM_GRID: {'type': 'f32', 'regDec': 252, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'total grid consumption'},
             self.PIN_O_INVERTER_POWER: {'type': 'scale16', 'regDec': 575, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'inverter power'},
-            self.PIN_O_INVERTER_STATE_INT: {'type': 'u16', 'regDec': 56, 'lastVal': 0, 'options': 0, 'calc': None, 'name': 'inverter state INT'},
+            # difference: Plenticore: u16, PIKO CI: u32. Get 32bit and shift 16bit if value is in wrong register.
+            self.PIN_O_INVERTER_STATE_INT: {'type': 'u32', 'regDec': 56, 'lastVal': 0, 'options': 0, 'calc': lambda x: x if x < 65535 else x >> 16, 'name': 'inverter state INT'},
             self.PIN_O_POWER_FROM_BATTERY: {'type': 'scale16', 'regDec': 582, 'lastVal': 0, 'options': 2, 'calc': None, 'name': 'power from battery'},
             self.PIN_O_TOTAL_YIELD: {'type': 'f32', 'regDec': 320, 'lastVal': 0.0, 'options': 0, 'calc': lambda x: x / 1000, 'name': 'total yield'},
             self.PIN_O_DAILY_YIELD: {'type': 'f32', 'regDec': 322, 'lastVal': 0.0, 'options': 0, 'calc': lambda x: x / 1000, 'name': 'daily yield'},
@@ -247,6 +249,14 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         if not result.isError():
             return BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,
                                                       wordorder=self.word_order()).decode_16bit_uint()
+        else:
+            return -1
+
+    def read_u32_1(self, client, unit_id, reg_addr):
+        result = client.read_holding_registers(reg_addr, 2, unit=unit_id)
+        if not result.isError():
+            return BinaryPayloadDecoder.fromRegisters(result.registers, byteorder=Endian.Big,
+                                                      wordorder=self.word_order()).decode_32bit_uint()
         else:
             return -1
 

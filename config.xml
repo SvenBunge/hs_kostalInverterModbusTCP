@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Energiemanagement" context="kostalInverterModbusTCP14180" id="14180" name="kostalInverterModbusTCP" internal_name="kostalInverterModbusTCP" external_name="Kostal-Wechselrichter ModbusTCP (14180)" version="2.2">
+        <module category="Energiemanagement" context="kostalInverterModbusTCP14180" id="14180" name="kostalInverterModbusTCP" internal_name="kostalInverterModbusTCP" external_name="Kostal-Wechselrichter ModbusTCP (14180)" version="2.3">
             <inputs>
                 <input type="number" const_name="switch" init_value="0">Switch on (1) / off (0)</input>
                 <input type="number" const_name="fetch_interval" init_value="5">Seconds of the interval to read power values (default: 5 secs)</input>
