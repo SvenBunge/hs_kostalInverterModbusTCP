@@ -1,6 +1,9 @@
 # Kostal-Wechselrichter ModbusTCP (14180)
-Gira Homeserver 4 Logikmodule to poll power values from Kostal solar energy inverter via Modbus TCP.
-Compatible with Kostal Plenticore Plus and PIKO IQ (Firmware 1.45 or later)
+Gira Homeserver 4 Logikmodule to poll power values from the 3rd Generation of Kostal solar energy inverter via Modbus TCP.
+Compatible with Kostal Plenticore Plus, PIKO IQ and PIKO CI.
+Not compatible with PIKO MP, PIKO MP Plus or PIKO 12-20! 
+
+**Important: Please update your inverter firmware before you use this plugin!**
 
 ## Developer Notes
 
@@ -46,7 +49,8 @@ You can replace step 4 with the `./buildRelease.sh` script. With the help of the
  
 ## Libraries
 
-* pymodbus 2.5.3 - https://github.com/riptideio/pymodbus 
+* pymodbus 2.5.3 - https://github.com/riptideio/pymodbus
+* pyserial 3.5 - https://github.com/pyserial/pyserial
 * six (in pymodbus folder) 1.16.0 - https://github.com/benjaminp/six
 
 The shipped libraries may distributed under a different license conditions. Respect those licenses as well!
