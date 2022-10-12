@@ -1,51 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <modules>
-        <module category="Energiemanagement" context="kostalInverterModbusTCP14180" id="14180" name="kostalInverterModbusTCP" internal_name="kostalInverterModbusTCP" external_name="Kostal-Wechselrichter ModbusTCP (14180)" version="2.3">
+        <module category="Energiemanagement" context="kostalInverterModbusTCP14180" id="14180" name="kostalInverterModbusTCP" internal_name="kostalInverterModbusTCP" external_name="Kostal-Wechselrichter ModbusTCP (14180)" version="3.0">
             <inputs>
                 <input type="number" const_name="switch" init_value="0">Switch on (1) / off (0)</input>
                 <input type="number" const_name="fetch_interval" init_value="5">Seconds of the interval to read power values (default: 5 secs)</input>
                 <input type="string" const_name="inverter_ip" init_value="127.0.0.1">IP of inverter</input>
                 <input type="number" const_name="port" init_value="1502">Modbus TCP Port (Kostal default: 1502)</input>
                 <input type="number" const_name="unit-id" init_value="71">Modbus unit id (Kostal default: 71)</input>
+                <input type="number" const_name="debug" init_value="0">Activate debug information</input>
             </inputs>
             <outputs>
-                <output type="number" const_name="home_consumption_battery" init_value="0">Own consumption from battery in W (sbc)</output>
-                <output type="number" const_name="home_consumption_grid" init_value="0">Own consumption from grid in W (sbc)</output>
-                <output type="number" const_name="home_consumption_pv" init_value="0">Own consumption from PV in W (sbc)</output>
-                <output type="number" const_name="home_consumption_total" init_value="0">Total current own consumption in W (sbc)</output>
-                <output type="number" const_name="total_power_from_grid" init_value="0">Total power from grid (neg: feed-in) (sbc)</output>
-                <output type="number" const_name="total_power_from_pv" init_value="0">Total power from PV generator (sbc)</output>
-                <output type="number" const_name="inverter_power" init_value="0">Power of inverter (AC/DC conversion) in W (sbc)</output>
-                <output type="number" const_name="inverter_state_int" init_value="-1">Inverter State as INT code(See manual) (sbc)</output>
-                <output type="string" const_name="inverter_state" init_value="">Inverter State as String (sbc)</output>
-                <output type="number" const_name="power_from_battery" init_value="0">Power from battery in W (neg: loading) (sbc)</output>
-                <output type="number" const_name="total_yield" init_value="0.0">Total yield in kWh (sbc)</output>
-                <output type="number" const_name="daily_yield" init_value="0.0">Daily yield in kWh (sbc)</output>
-                <output type="number" const_name="monthly_yield" init_value="0.0">Monthly yield in kWh (sbc)</output>
-                <output type="number" const_name="yearly_yield" init_value="0.0">Yearly yield in kWh (sbc)</output>
-                <output type="number" const_name="dc1_voltage" init_value="0.0">DC1 Voltage in V (sbc)</output>
-                <output type="number" const_name="dc1_current" init_value="0.0">DC1 Current in A (sbc)</output>
-                <output type="number" const_name="dc2_voltage" init_value="0.0">DC2 Voltage in V (sbc)</output>
-                <output type="number" const_name="dc2_current" init_value="0.0">DC2 Current in A (sbc)</output>
-                <output type="number" const_name="dc3_voltage" init_value="0.0">DC3 Voltage in V (sbc)</output>
-                <output type="number" const_name="dc3_current" init_value="0.0">DC3 Current in A (sbc)</output>
-                <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in % (sbc)</output>
-                <output type="number" const_name="battery_cycles" init_value="0">Battery Cycles (sbc)</output>
-                <output type="number" const_name="battery_voltage" init_value="0.0">Battery Voltage in V (sbc)</output>
-                <output type="number" const_name="battery_temperature" init_value="0.0">Battery Temperature in °C (sbc)</output>
-                <output type="number" const_name="battery_ready" init_value="0">Battery ready (sbc)</output>
-                <output type="number" const_name="total_DC-charge_energy" init_value="0">Total DC charge energy (DC-side to battery) (sbc)</output>
-                <output type="number" const_name="total_DC-discharge_energy" init_value="0">Total DC discharge energy (DC-side from battery) (sbc)</output>
-                <output type="number" const_name="total_AC-charge_energy" init_value="0">Total AC charge energy (AC-side to battery) (sbc)</output>
-                <output type="number" const_name="total_AC-discharge_energy" init_value="0">Total AC discharge energy (battery to grid) (sbc)</output>
-                <output type="number" const_name="total_grid-charge_energy" init_value="0">Total AC charge energy (grid to battery) (sbc)</output>
-                <output type="number" const_name="total_DC_sum_energy" init_value="0">Total DC PV energy (sum of all PV inputs) (sbc)</output>
-                <output type="number" const_name="total_DC1_energy" init_value="0">Total DC energy from PV1 (sbc)</output>
-                <output type="number" const_name="total_DC2_energy" init_value="0">Total DC energy from PV2 (sbc)</output>
-                <output type="number" const_name="total_DC3_energy" init_value="0">Total DC energy from PV3 (sbc)</output>
-                <output type="number" const_name="total_ac-side_grid" init_value="0">Total energy AC-side to grid (sbc)</output>
-                <output type="number" const_name="total_dc_power" init_value="0">Total DC power (sum of all PV inputs) (sbc)</output>
+                <output type="number" const_name="home_consumption_battery" init_value="0">Own consumption from battery in W</output>
+                <output type="number" const_name="home_consumption_grid" init_value="0">Own consumption from grid in W</output>
+                <output type="number" const_name="home_consumption_pv" init_value="0">Own consumption from PV in W</output>
+                <output type="number" const_name="home_consumption_total" init_value="0">Total current own consumption in W</output>
+                <output type="number" const_name="total_power_from_grid" init_value="0">Total power from grid (neg: feed-in)</output>
+                <output type="number" const_name="total_power_from_pv" init_value="0">Total power from PV generator</output>
+                <output type="number" const_name="max_inverter_power" init_value="0">Inverter power limit in W</output>
+                <output type="number" const_name="inverter_power" init_value="0">Power of inverter (AC/DC conversion) in W</output>
+                <output type="number" const_name="inverter_state_int" init_value="-1">Inverter State as INT code(See manual)</output>
+                <output type="string" const_name="inverter_state" init_value="">Inverter State as String</output>
+                <output type="number" const_name="isolation_resistance" init_value="0">Isolation resistance in M-Ohm</output>
+                <output type="number" const_name="cos_phi" init_value="0">Actual cos phi</output>
+                <output type="number" const_name="grid_freq" init_value="0.0">Grid frequency</output>
+                <output type="number" const_name="l1_voltage" init_value="0.0">AC L1: voltage in V</output>
+                <output type="number" const_name="l1_current" init_value="0.0">AC L1: current in A</output>
+                <output type="number" const_name="l1_power" init_value="0">AC L1: power in W</output>
+                <output type="number" const_name="l2_voltage" init_value="0.0">AC L2: voltage in V</output>
+                <output type="number" const_name="l2_current" init_value="0.0">AC L2: current in A</output>
+                <output type="number" const_name="l2_power" init_value="0">AC L2: power in W</output>
+                <output type="number" const_name="l3_voltage" init_value="0.0">AC L3: voltage in V</output>
+                <output type="number" const_name="l3_current" init_value="0.0">AC L3: current in A</output>
+                <output type="number" const_name="l3_power" init_value="0">AC L3: power in W</output>
+                <output type="number" const_name="power_from_battery" init_value="0">Power from battery in W (neg: loading)</output>
+                <output type="number" const_name="total_yield" init_value="0.0">Total yield in kWh</output>
+                <output type="number" const_name="daily_yield" init_value="0.0">Daily yield in kWh</output>
+                <output type="number" const_name="monthly_yield" init_value="0.0">Monthly yield in kWh</output>
+                <output type="number" const_name="yearly_yield" init_value="0.0">Yearly yield in kWh</output>
+                <output type="number" const_name="dc1_voltage" init_value="0.0">DC1 Voltage in V</output>
+                <output type="number" const_name="dc1_current" init_value="0.0">DC1 Current in A</output>
+                <output type="number" const_name="dc1_power" init_value="0">DC1 Power in W</output>
+                <output type="number" const_name="dc2_voltage" init_value="0.0">DC2 Voltage in V</output>
+                <output type="number" const_name="dc2_current" init_value="0.0">DC2 Current in A</output>
+                <output type="number" const_name="dc2_power" init_value="0">DC2 Power in W</output>
+                <output type="number" const_name="dc3_voltage" init_value="0.0">DC3 Voltage in V</output>
+                <output type="number" const_name="dc3_current" init_value="0.0">DC3 Current in A</output>
+                <output type="number" const_name="dc3_power" init_value="0">DC3 Power in W</output>
+                <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in %</output>
+                <output type="number" const_name="battery_cycles" init_value="0">Battery Cycles</output>
+                <output type="number" const_name="battery_work_capacity" init_value="0.0">Battery work capacity in kWh</output>
+                <output type="number" const_name="battery_voltage" init_value="0.0">Battery Voltage in V</output>
+                <output type="number" const_name="battery_temperature" init_value="0.0">Battery Temperature in °C</output>
+                <output type="number" const_name="battery_ready" init_value="0">Battery ready</output>
+                <output type="number" const_name="total_DC-charge_energy" init_value="0">Total DC charge energy (DC-side to battery)</output>
+                <output type="number" const_name="total_DC-discharge_energy" init_value="0">Total DC discharge energy (DC-side from battery)</output>
+                <output type="number" const_name="total_AC-charge_energy" init_value="0">Total AC charge energy (AC-side to battery)</output>
+                <output type="number" const_name="total_AC-discharge_energy" init_value="0">Total AC discharge energy (battery to grid)</output>
+                <output type="number" const_name="total_grid-charge_energy" init_value="0">Total AC charge energy (grid to battery)</output>
+                <output type="number" const_name="total_DC_sum_energy" init_value="0">Total DC PV energy (sum of all PV inputs)</output>
+                <output type="number" const_name="total_DC1_energy" init_value="0">Total DC energy from PV1</output>
+                <output type="number" const_name="total_DC2_energy" init_value="0">Total DC energy from PV2</output>
+                <output type="number" const_name="total_DC3_energy" init_value="0">Total DC energy from PV3</output>
+                <output type="number" const_name="total_ac-side_grid" init_value="0">Total energy AC-side to grid</output>
+                <output type="number" const_name="total_dc_power" init_value="0">Total DC power (sum of all PV inputs)</output>
             </outputs>
             <remanent_variables>
             </remanent_variables>
@@ -53,6 +71,7 @@
                 <import>hsl20_3_timer</import>
                 <import>lib/pymodbus</import>
                 <import>lib/serial</import>
+                <import>lib/six</import>
             </imports>
         </module>
     </modules>
