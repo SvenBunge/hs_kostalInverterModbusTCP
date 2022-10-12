@@ -48,26 +48,26 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         self.PIN_O_L3_VOLTAGE=20
         self.PIN_O_L3_CURRENT=21
         self.PIN_O_L3_POWER=22
-        self.PIN_O_POWER_FROM_BATTERY=23
-        self.PIN_O_TOTAL_YIELD=24
-        self.PIN_O_DAILY_YIELD=25
-        self.PIN_O_MONTHLY_YIELD=26
-        self.PIN_O_YEARLY_YIELD=27
-        self.PIN_O_DC1_VOLTAGE=28
-        self.PIN_O_DC1_CURRENT=29
-        self.PIN_O_DC1_POWER=30
-        self.PIN_O_DC2_VOLTAGE=31
-        self.PIN_O_DC2_CURRENT=32
-        self.PIN_O_DC2_POWER=33
-        self.PIN_O_DC3_VOLTAGE=34
-        self.PIN_O_DC3_CURRENT=35
-        self.PIN_O_DC3_POWER=36
-        self.PIN_O_BATTERY_SOC=37
-        self.PIN_O_BATTERY_CYCLES=38
-        self.PIN_O_BATTERY_WORK_CAPACITY=39
+        self.PIN_O_TOTAL_YIELD=23
+        self.PIN_O_DAILY_YIELD=24
+        self.PIN_O_MONTHLY_YIELD=25
+        self.PIN_O_YEARLY_YIELD=26
+        self.PIN_O_DC1_VOLTAGE=27
+        self.PIN_O_DC1_CURRENT=28
+        self.PIN_O_DC1_POWER=29
+        self.PIN_O_DC2_VOLTAGE=30
+        self.PIN_O_DC2_CURRENT=31
+        self.PIN_O_DC2_POWER=32
+        self.PIN_O_DC3_VOLTAGE=33
+        self.PIN_O_DC3_CURRENT=34
+        self.PIN_O_DC3_POWER=35
+        self.PIN_O_BATTERY_READY=36
+        self.PIN_O_BATTERY_WORK_CAPACITY=37
+        self.PIN_O_BATTERY_SOC=38
+        self.PIN_O_POWER_FROM_BATTERY=39
         self.PIN_O_BATTERY_VOLTAGE=40
         self.PIN_O_BATTERY_TEMPERATURE=41
-        self.PIN_O_BATTERY_READY=42
+        self.PIN_O_BATTERY_CYCLES=42
         self.PIN_O_TOTAL_DC_CHARGE_ENERGY=43
         self.PIN_O_TOTAL_DC_DISCHARGE_ENERGY=44
         self.PIN_O_TOTAL_AC_CHARGE_ENERGY=45
@@ -123,13 +123,14 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
 
         # All Outputs as a dictionary. The key is the number of the output.
         self.registers = {
+            self.PIN_O_BATTERY_READY: {'type': 'f32', 'regDec': 208, 'lastVal': 0, 'calc': None, 'name': 'battery ready flag'},
+            self.PIN_O_POWER_FROM_BATTERY: {'type': 'scale16', 'regDec': 582, 'lastVal': 0, 'calc': None, 'name': 'power from battery'},
             self.PIN_O_BATTERY_SOC: {'type': 'f32', 'regDec': 210, 'lastVal': 0, 'calc': None, 'name': 'battery SOC'},
             self.PIN_O_BATTERY_CYCLES: {'type': 'f32', 'regDec': 194, 'lastVal': 0, 'calc': None, 'name': 'battery cycles'},
             self.PIN_O_BATTERY_WORK_CAPACITY: {'type': 'u32', 'regDec': 529, 'lastVal': 0.0, 'calc': None, 'name': 'battery work capacity'},
             self.PIN_O_BATTERY_VOLTAGE: {'type': 'f32', 'regDec': 216, 'lastVal': 0.0, 'calc': None, 'name': 'battery voltage'},
             self.PIN_O_BATTERY_TEMPERATURE: {'type': 'f32', 'regDec': 214, 'lastVal': 0.0, 'calc': None, 'name': 'battery temperature'},
             self.PIN_O_HOME_CONSUMPTION_BATTERY: {'type': 'f32', 'regDec': 106, 'lastVal': 0, 'calc': None, 'name': 'home consumption battery'},
-            self.PIN_O_BATTERY_READY: {'type': 'f32', 'regDec': 208, 'lastVal': 0, 'calc': None, 'name': 'battery ready flag'},
             self.PIN_O_HOME_CONSUMPTION_GRID: {'type': 'f32', 'regDec': 108, 'lastVal': 0, 'calc': None, 'name': 'home consumption grid'},
             self.PIN_O_HOME_CONSUMPTION_PV: {'type': 'f32', 'regDec': 116, 'lastVal': 0, 'calc': None, 'name': 'home consumption PV'},
             self.PIN_O_TOTAL_POWER_FROM_GRID: {'type': 'f32', 'regDec': 252, 'lastVal': 0, 'calc': None, 'name': 'total grid consumption'},
@@ -149,7 +150,6 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             self.PIN_O_L3_VOLTAGE: {'type': 'f32', 'regDec': 170, 'lastVal': 0, 'calc': None, 'name': 'L3 voltage in V'},
             self.PIN_O_L3_CURRENT: {'type': 'f32', 'regDec': 166, 'lastVal': 0, 'calc': None, 'name': 'L3 current in A'},
             self.PIN_O_L3_POWER: {'type': 'f32', 'regDec': 168, 'lastVal': 0, 'calc': None, 'name': 'L3 power in W'},
-            self.PIN_O_POWER_FROM_BATTERY: {'type': 'scale16', 'regDec': 582, 'lastVal': 0, 'calc': None, 'name': 'power from battery'},
             self.PIN_O_TOTAL_YIELD: {'type': 'f32', 'regDec': 320, 'lastVal': 0.0, 'calc': lambda x: x / 1000, 'name': 'total yield'},
             self.PIN_O_DAILY_YIELD: {'type': 'f32', 'regDec': 322, 'lastVal': 0.0, 'calc': lambda x: x / 1000, 'name': 'daily yield'},
             self.PIN_O_MONTHLY_YIELD: {'type': 'f32', 'regDec': 326, 'lastVal': 0.0, 'calc': lambda x: x / 1000, 'name': 'monthly yield'},

@@ -33,7 +33,6 @@
                 <output type="number" const_name="l3_voltage" init_value="0.0">AC L3: voltage in V</output>
                 <output type="number" const_name="l3_current" init_value="0.0">AC L3: current in A</output>
                 <output type="number" const_name="l3_power" init_value="0">AC L3: power in W</output>
-                <output type="number" const_name="power_from_battery" init_value="0">Power from battery in W (neg: loading)</output>
                 <output type="number" const_name="total_yield" init_value="0.0">Total yield in kWh</output>
                 <output type="number" const_name="daily_yield" init_value="0.0">Daily yield in kWh</output>
                 <output type="number" const_name="monthly_yield" init_value="0.0">Monthly yield in kWh</output>
@@ -47,12 +46,13 @@
                 <output type="number" const_name="dc3_voltage" init_value="0.0">DC3 Voltage in V</output>
                 <output type="number" const_name="dc3_current" init_value="0.0">DC3 Current in A</output>
                 <output type="number" const_name="dc3_power" init_value="0">DC3 Power in W</output>
-                <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in %</output>
-                <output type="number" const_name="battery_cycles" init_value="0">Battery Cycles</output>
+                <output type="number" const_name="battery_ready" init_value="0">Battery ready</output>
                 <output type="number" const_name="battery_work_capacity" init_value="0.0">Battery work capacity in kWh</output>
+                <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in %</output>
+                <output type="number" const_name="power_from_battery" init_value="0">Power from battery in W (neg: loading)</output>
                 <output type="number" const_name="battery_voltage" init_value="0.0">Battery Voltage in V</output>
                 <output type="number" const_name="battery_temperature" init_value="0.0">Battery Temperature in °C</output>
-                <output type="number" const_name="battery_ready" init_value="0">Battery ready</output>
+                <output type="number" const_name="battery_cycles" init_value="0">Battery Cycles</output>
                 <output type="number" const_name="total_DC-charge_energy" init_value="0">Total DC charge energy (DC-side to battery)</output>
                 <output type="number" const_name="total_DC-discharge_energy" init_value="0">Total DC discharge energy (DC-side from battery)</output>
                 <output type="number" const_name="total_AC-charge_energy" init_value="0">Total AC charge energy (AC-side to battery)</output>
