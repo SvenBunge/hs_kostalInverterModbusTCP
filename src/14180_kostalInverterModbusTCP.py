@@ -25,7 +25,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         self.PIN_I_INVERTER_IP=3
         self.PIN_I_PORT=4
         self.PIN_I_UNIT_ID=5
-        self.PIN_I_DEBUG=6
+        self.PIN_I_ENABLE_DEBUG=6
         self.PIN_O_HOME_CONSUMPTION_BATTERY=1
         self.PIN_O_HOME_CONSUMPTION_GRID=2
         self.PIN_O_HOME_CONSUMPTION_PV=3
