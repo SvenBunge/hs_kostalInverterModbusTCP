@@ -61,24 +61,24 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
         self.PIN_O_DC3_VOLTAGE=33
         self.PIN_O_DC3_CURRENT=34
         self.PIN_O_DC3_POWER=35
-        self.PIN_O_BATTERY_READY=36
-        self.PIN_O_BATTERY_WORK_CAPACITY=37
-        self.PIN_O_BATTERY_SOC=38
-        self.PIN_O_POWER_FROM_BATTERY=39
-        self.PIN_O_BATTERY_VOLTAGE=40
-        self.PIN_O_BATTERY_TEMPERATURE=41
-        self.PIN_O_BATTERY_CYCLES=42
-        self.PIN_O_TOTAL_DC_CHARGE_ENERGY=43
-        self.PIN_O_TOTAL_DC_DISCHARGE_ENERGY=44
-        self.PIN_O_TOTAL_AC_CHARGE_ENERGY=45
-        self.PIN_O_TOTAL_AC_DISCHARGE_ENERGY=46
-        self.PIN_O_TOTAL_GRID_CHARGE_ENERGY=47
-        self.PIN_O_TOTAL_DC_SUM_ENERGY=48
-        self.PIN_O_TOTAL_DC1_ENERGY=49
-        self.PIN_O_TOTAL_DC2_ENERGY=50
-        self.PIN_O_TOTAL_DC3_ENERGY=51
-        self.PIN_O_TOTAL_AC_SIDE_GRID=52
-        self.PIN_O_TOTAL_DC_POWER=53
+        self.PIN_O_TOTAL_DC_POWER=36
+        self.PIN_O_BATTERY_READY=37
+        self.PIN_O_BATTERY_WORK_CAPACITY=38
+        self.PIN_O_BATTERY_SOC=39
+        self.PIN_O_POWER_FROM_BATTERY=40
+        self.PIN_O_BATTERY_VOLTAGE=41
+        self.PIN_O_BATTERY_TEMPERATURE=42
+        self.PIN_O_BATTERY_CYCLES=43
+        self.PIN_O_TOTAL_DC_CHARGE_ENERGY=44
+        self.PIN_O_TOTAL_DC_DISCHARGE_ENERGY=45
+        self.PIN_O_TOTAL_AC_CHARGE_ENERGY=46
+        self.PIN_O_TOTAL_AC_DISCHARGE_ENERGY=47
+        self.PIN_O_TOTAL_GRID_CHARGE_ENERGY=48
+        self.PIN_O_TOTAL_DC_SUM_ENERGY=49
+        self.PIN_O_TOTAL_DC1_ENERGY=50
+        self.PIN_O_TOTAL_DC2_ENERGY=51
+        self.PIN_O_TOTAL_DC3_ENERGY=52
+        self.PIN_O_TOTAL_AC_SIDE_GRID=53
         self.FRAMEWORK._run_in_context_thread(self.on_init)
 
 ########################################################################################################

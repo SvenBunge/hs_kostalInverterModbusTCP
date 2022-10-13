@@ -46,6 +46,7 @@
                 <output type="number" const_name="dc3_voltage" init_value="0.0">DC3 Voltage in V</output>
                 <output type="number" const_name="dc3_current" init_value="0.0">DC3 Current in A</output>
                 <output type="number" const_name="dc3_power" init_value="0">DC3 Power in W</output>
+                <output type="number" const_name="total_dc_power" init_value="0">Total DC power (sum of all PV inputs)</output>
                 <output type="number" const_name="battery_ready" init_value="0">Battery ready</output>
                 <output type="number" const_name="battery_work_capacity" init_value="0.0">Battery work capacity in kWh</output>
                 <output type="number" const_name="battery_SOC" init_value="0">Battery SOC in %</output>
@@ -63,7 +64,6 @@
                 <output type="number" const_name="total_DC2_energy" init_value="0">Total DC energy from PV2</output>
                 <output type="number" const_name="total_DC3_energy" init_value="0">Total DC energy from PV3</output>
                 <output type="number" const_name="total_ac-side_grid" init_value="0">Total energy AC-side to grid</output>
-                <output type="number" const_name="total_dc_power" init_value="0">Total DC power (sum of all PV inputs)</output>
             </outputs>
             <remanent_variables>
             </remanent_variables>

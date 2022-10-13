@@ -51,6 +51,6 @@ You can replace step 4 with the `./buildRelease.sh` script. With the help of the
 
 * pymodbus 2.5.3 - https://github.com/riptideio/pymodbus
 * pyserial 3.5 - https://github.com/pyserial/pyserial
-* six (in pymodbus folder) 1.16.0 - https://github.com/benjaminp/six
+* six 1.16.0 - https://github.com/benjaminp/six
 
 The shipped libraries may distributed under a different license conditions. Respect those licenses as well!
