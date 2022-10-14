@@ -97,7 +97,7 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
                             {"from": 56, "to": 58},
                             {"from": 100, "to": 196},
                             {"from": 200, "to": 296},
-                            {"from": 320, "to": 327},
+                            {"from": 320, "to": 328},
                             {"from": 529, "to": 589},
                             {"from": 1046, "to": 1068}]
 
