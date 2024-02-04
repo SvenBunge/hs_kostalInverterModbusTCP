@@ -255,9 +255,10 @@ class KostalInverterModbusTCP14180(hsl20_3.BaseModule):
             self._set_output_value(self.PIN_O_HOME_CONSUMPTION_TOTAL, total_consumption)
             self.total_consumption_sbc = total_consumption
         # Calculate total power from PV
-        total_power_from_pv = -1 * (min(0, self.registers[self.PIN_O_POWER_FROM_BATTERY]['lastVal']) +
-                                    min(0, self.registers[self.PIN_O_TOTAL_POWER_FROM_GRID]['lastVal'])) + \
-                              self.registers[self.PIN_O_HOME_CONSUMPTION_PV]['lastVal']
+        total_power_from_pv = self.registers[self.PIN_O_HOME_CONSUMPTION_PV]['lastVal'] - \
+                              min(0, self.registers[self.PIN_O_POWER_FROM_BATTERY]['lastVal'] +
+                                  self.registers[self.PIN_O_TOTAL_POWER_FROM_GRID]['lastVal'])
+
         if self.total_power_from_pv_sbc != total_power_from_pv:
             self.log_debug("total power pv calc", total_power_from_pv)
             self._set_output_value(self.PIN_O_TOTAL_POWER_FROM_PV, total_power_from_pv)
